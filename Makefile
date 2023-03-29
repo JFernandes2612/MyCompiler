@@ -1,2 +1,2 @@
 all:
-	gcc -w main.c Utils/utils.c
+	gcc -w Utils/utils.c Lexer/lexer.c main.c
