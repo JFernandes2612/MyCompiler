@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "Utils/utils.h"
 #include "Lexer/lexer.h"
+#include "Parser/parser.h"
 
 void printUsage(const char *ex)
 {
@@ -37,6 +38,9 @@ int main(int argc, char *argv[])
     printf("Lexer tokens:\n");
     printTokenArray(tokens);
     printf("\n\n");
+
+    struct ast ast;
+    ast = parse(tokens);
 
     return 0;
 }
