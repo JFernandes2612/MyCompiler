@@ -55,32 +55,29 @@ const struct Token lexTokenStateMachineAlpha(const char *input, long *pos)
     token.token_type = IDENTIFIER;
 
     char c = input[*pos];
-    long init_pos = (*pos);
+    int first_time = 0;
 
     while (isalpha(c))
     {
-        long current_pos = (*pos);
-        struct Token new_token;
-        new_token.token_type = IDENTIFIER;
-        if (c == 'i')
-        {
-            new_token = lexTokenStateMachineAlphaIntKeyword(input, pos);
-        }
-        else if (c == 'r')
-        {
-            new_token = lexTokenStateMachineAlphaReturnKeyword(input, pos);
-        }
+        if (!first_time) {
+            struct Token new_token;
+            new_token.token_type = IDENTIFIER;
+            if (c == 'i')
+            {
+                new_token = lexTokenStateMachineAlphaIntKeyword(input, pos);
+            }
+            else if (c == 'r')
+            {
+                new_token = lexTokenStateMachineAlphaReturnKeyword(input, pos);
+            }
 
-        if (new_token.token_type != IDENTIFIER)
-        {
-            if (current_pos == init_pos)
+            if (new_token.token_type != IDENTIFIER)
             {
                 return new_token;
             }
-            (*pos) = current_pos;
-            return token;
         }
-
+        
+        first_time = 1;
         (*pos)++;
         c = input[*pos];
     }
@@ -94,6 +91,12 @@ const struct Token lexTokenStateMachine(const char *input, long *pos)
     token.token_type = ERROR_T;
 
     char c = input[*pos];
+
+    while (c == ' ' || c == '\n' || c == "\t")
+    {
+        (*pos)++;
+        c = input[*pos];
+    }
 
     if (isdigit(c))
     {
