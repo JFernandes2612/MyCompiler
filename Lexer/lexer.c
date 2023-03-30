@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 
 const struct Token lexTokenStateMachineDigit(const char *input, long *pos)
 {
@@ -19,39 +20,32 @@ const struct Token lexTokenStateMachineDigit(const char *input, long *pos)
     return token;
 }
 
-const struct Token lexTokenStateMachineAlphaIntKeyword(const char *input, long *pos)
+const struct Token lexTokenStateMachineAlphaKeyword(const char *input, long *pos, const char* target_word, const enum TokenType token_type)
 {
     struct Token token;
     token.token_type = IDENTIFIER;
 
-    char n = input[(*pos) + 1];
-    char t = input[(*pos) + 2];
+    long target_word_length = strlen(target_word);
 
-    if (n == 'n' && t == 't') {
-        token.token_type = INT_KEYWORD;
-        (*pos) += 2;
+    char comparation_input[128];
+    strncpy(comparation_input, input + (*pos), target_word_length);
+
+    if (strcmp(comparation_input, target_word) == 0) {
+        token.token_type = token_type;
+        (*pos) += target_word_length;
     }
 
     return token;
 }
 
+const struct Token lexTokenStateMachineAlphaIntKeyword(const char *input, long *pos)
+{
+    return lexTokenStateMachineAlphaKeyword(input, pos, "int", INT_KEYWORD);
+}
+
 const struct Token lexTokenStateMachineAlphaReturnKeyword(const char *input, long *pos)
 {
-    struct Token token;
-    token.token_type = IDENTIFIER;
-
-    char e = input[(*pos) + 1];
-    char t = input[(*pos) + 2];
-    char u = input[(*pos) + 3];
-    char r = input[(*pos) + 4];
-    char n = input[(*pos) + 5];
-
-    if (e == 'e' && t == 't' && u == 'u' && r == 'r' && n == 'n') {
-        token.token_type = RETURN_KEYWORD;
-        (*pos) += 5;
-    }
-
-    return token;
+    return lexTokenStateMachineAlphaKeyword(input, pos, "return", RETURN_KEYWORD);
 }
 
 const struct Token lexTokenStateMachineAlpha(const char *input, long *pos)
@@ -71,7 +65,6 @@ const struct Token lexTokenStateMachineAlpha(const char *input, long *pos)
         }
 
         if (token.token_type != IDENTIFIER) {
-            (*pos)++;
             return token;
         }
 
