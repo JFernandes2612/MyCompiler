@@ -57,7 +57,7 @@ const struct Token lexTokenStateMachineAlpha(const char *input, long *pos)
     char c = input[*pos];
     int first_time = 0;
 
-    while (isalpha(c))
+    while (isalpha(c) || isdigit(c) || c == "_")
     {
         if (!first_time) {
             struct Token new_token;
@@ -71,7 +71,7 @@ const struct Token lexTokenStateMachineAlpha(const char *input, long *pos)
                 new_token = lexTokenStateMachineAlphaReturnKeyword(input, pos);
             }
 
-            if (new_token.token_type != IDENTIFIER)
+            if (new_token.token_type != IDENTIFIER && !isalpha(c) && !isdigit(c) && c != "_")
             {
                 return new_token;
             }
