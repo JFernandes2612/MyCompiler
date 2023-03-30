@@ -4,31 +4,31 @@ const char* tokenToString(const struct Token token)
 {
     switch (token.token_type)
     {
-    case OPEN_BRACE:
+    case OPEN_BRACE_T:
         return "OPEN_BRACE";
         break;
-    case CLOSE_BRACE:
+    case CLOSE_BRACE_T:
         return "CLOSE_BRACE";
         break;
-    case OPEN_PAREN:
+    case OPEN_PAREN_T:
         return "OPEN_PAREN";
         break;
-    case CLOSE_PAREN:
+    case CLOSE_PAREN_T:
         return "CLOSE_PAREN";
         break;
-    case SEMICOLON:
+    case SEMICOLON_T:
         return "SEMICOLON";
         break;
-    case INT_KEYWORD:
+    case INT_KEYWORD_T:
         return "INT_KEYWORD";
         break;
-    case RETURN_KEYWORD:
+    case RETURN_KEYWORD_T:
         return "RETURN_KEYWORD";
         break;
-    case IDENTIFIER:
+    case IDENTIFIER_T:
         return "IDENTIFIER";
         break;
-    case INT_LITERAL:
+    case INT_LITERAL_T:
         return "INT_LITERAL";
         break;
     case EOF_T:

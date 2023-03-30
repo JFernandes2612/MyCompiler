@@ -7,7 +7,7 @@
 const struct Token lexTokenStateMachineDigit(const char *input, long *pos)
 {
     struct Token token;
-    token.token_type = INT_LITERAL;
+    token.token_type = INT_LITERAL_T;
 
     char c = input[*pos];
 
@@ -23,7 +23,7 @@ const struct Token lexTokenStateMachineDigit(const char *input, long *pos)
 const struct Token lexTokenStateMachineAlphaKeyword(const char *input, long *pos, const char *target_word, const enum TokenType token_type)
 {
     struct Token token;
-    token.token_type = IDENTIFIER;
+    token.token_type = IDENTIFIER_T;
 
     long target_word_length = strlen(target_word);
 
@@ -41,18 +41,18 @@ const struct Token lexTokenStateMachineAlphaKeyword(const char *input, long *pos
 
 const struct Token lexTokenStateMachineAlphaIntKeyword(const char *input, long *pos)
 {
-    return lexTokenStateMachineAlphaKeyword(input, pos, "int", INT_KEYWORD);
+    return lexTokenStateMachineAlphaKeyword(input, pos, "int", INT_KEYWORD_T);
 }
 
 const struct Token lexTokenStateMachineAlphaReturnKeyword(const char *input, long *pos)
 {
-    return lexTokenStateMachineAlphaKeyword(input, pos, "return", RETURN_KEYWORD);
+    return lexTokenStateMachineAlphaKeyword(input, pos, "return", RETURN_KEYWORD_T);
 }
 
 const struct Token lexTokenStateMachineAlpha(const char *input, long *pos)
 {
     struct Token token;
-    token.token_type = IDENTIFIER;
+    token.token_type = IDENTIFIER_T;
 
     char c = input[*pos];
     int first_time = 1;
@@ -62,7 +62,7 @@ const struct Token lexTokenStateMachineAlpha(const char *input, long *pos)
         if (first_time) {
             first_time = 0;
             struct Token new_token;
-            new_token.token_type = IDENTIFIER;
+            new_token.token_type = IDENTIFIER_T;
             if (c == 'i')
             {
                 new_token = lexTokenStateMachineAlphaIntKeyword(input, pos);
@@ -74,7 +74,7 @@ const struct Token lexTokenStateMachineAlpha(const char *input, long *pos)
 
             c = input[*pos];
 
-            if (new_token.token_type != IDENTIFIER && !isalpha(c) && !isdigit(c) && c != "_")
+            if (new_token.token_type != IDENTIFIER_T && !isalpha(c) && !isdigit(c) && c != "_")
             {
                 return new_token;
             }
@@ -114,19 +114,19 @@ const struct Token lexTokenStateMachine(const char *input, long *pos)
         switch (c)
         {
         case '(':
-            token.token_type = OPEN_PAREN;
+            token.token_type = OPEN_PAREN_T;
             break;
         case ')':
-            token.token_type = CLOSE_PAREN;
+            token.token_type = CLOSE_PAREN_T;
             break;
         case '{':
-            token.token_type = OPEN_BRACE;
+            token.token_type = OPEN_BRACE_T;
             break;
         case '}':
-            token.token_type = CLOSE_BRACE;
+            token.token_type = CLOSE_BRACE_T;
             break;
         case ';':
-            token.token_type = SEMICOLON;
+            token.token_type = SEMICOLON_T;
             break;
         case '\0':
             token.token_type = EOF_T;

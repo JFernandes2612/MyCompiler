@@ -4,6 +4,6 @@
 #include "ast.h"
 #include "../Lexer/token.h"
 
-const struct ast parse(const struct Token *tokens);
+const struct Ast parse(const struct Token *tokens);
 
 #endif

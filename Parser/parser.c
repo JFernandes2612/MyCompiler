@@ -1,7 +1,11 @@
 #include "parser.h"
 
-const struct ast parse(const struct Token *tokens) {
-    struct ast ast;
+const struct Ast parse(const struct Token *tokens) {
+    struct Ast ast;
+
+    struct Node program;
+
+    ast.program = program;
     
     return ast;
 }

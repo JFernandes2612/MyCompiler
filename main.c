@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     printTokenArray(tokens);
     printf("\n\n");
 
-    struct ast ast;
+    struct Ast ast;
     ast = parse(tokens);
 
     return 0;
