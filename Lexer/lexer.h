@@ -7,7 +7,7 @@
 
 const struct Token lexTokenStateMachineDigit(const char *input, long *pos);
 
-const struct Token lexTokenStateMachineAlphaKeyword(const char *input, long *pos, const char* target_word, const enum TokenType token_type);
+const struct Token lexTokenStateMachineAlphaKeyword(const char *input, long *pos, const char *target_word, const enum TokenType token_type);
 
 const struct Token lexTokenStateMachineAlphaIntKeyword(const char *input, long *pos);
 

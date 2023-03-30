@@ -24,10 +24,10 @@ struct Token
     enum TokenType token_type;
 };
 
-const char* tokenToString(const struct Token token);
+const char *tokenToString(const struct Token token);
 
 void printToken(const struct Token token);
 
-void printTokenArray(const struct Token* tokens);
+void printTokenArray(const struct Token *tokens);
 
 #endif

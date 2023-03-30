@@ -5,6 +5,6 @@
 
 const char *readFile(const char *path);
 
-const char *minimizeInput(const char* input);
+const char *minimizeInput(const char *input);
 
 #endif

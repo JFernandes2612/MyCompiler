@@ -48,12 +48,14 @@ const char *readFile(const char *path)
     return ret;
 }
 
-const char *minimizeInput(const char* input) {
+const char *minimizeInput(const char *input)
+{
     long input_size = strlen(input) + 1;
 
-    char* ret;
-    
-    if ((ret = malloc(input_size)) == NULL) {
+    char *ret;
+
+    if ((ret = malloc(input_size)) == NULL)
+    {
         printf("Error unable to malloc memory of size %ld\n", input_size);
         return NULL;
     }
@@ -62,8 +64,10 @@ const char *minimizeInput(const char* input) {
     long counter = 0;
     long minimize_counter = 0;
 
-    while ((c = input[counter]) != '\0') {
-        if (c != '\n' && c != '\t' && c != ' ') {
+    while ((c = input[counter]) != '\0')
+    {
+        if (c != '\n' && c != '\t' && c != ' ')
+        {
             ret[minimize_counter] = c;
             minimize_counter++;
         }
@@ -72,7 +76,8 @@ const char *minimizeInput(const char* input) {
 
     ret[minimize_counter] = '\0';
 
-    if ((ret = realloc(ret, strlen(ret))) == NULL) {
+    if ((ret = realloc(ret, strlen(ret))) == NULL)
+    {
         printf("Error unable to realloc memory to size %ld\n", strlen(ret));
         return NULL;
     }

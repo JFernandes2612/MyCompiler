@@ -20,7 +20,7 @@ const struct Token lexTokenStateMachineDigit(const char *input, long *pos)
     return token;
 }
 
-const struct Token lexTokenStateMachineAlphaKeyword(const char *input, long *pos, const char* target_word, const enum TokenType token_type)
+const struct Token lexTokenStateMachineAlphaKeyword(const char *input, long *pos, const char *target_word, const enum TokenType token_type)
 {
     struct Token token;
     token.token_type = IDENTIFIER;
@@ -30,7 +30,8 @@ const struct Token lexTokenStateMachineAlphaKeyword(const char *input, long *pos
     char comparation_input[128];
     strncpy(comparation_input, input + (*pos), target_word_length);
 
-    if (strcmp(comparation_input, target_word) == 0) {
+    if (strcmp(comparation_input, target_word) == 0)
+    {
         token.token_type = token_type;
         (*pos) += target_word_length;
     }
@@ -54,17 +55,29 @@ const struct Token lexTokenStateMachineAlpha(const char *input, long *pos)
     token.token_type = IDENTIFIER;
 
     char c = input[*pos];
+    long init_pos = (*pos);
 
     while (isalpha(c))
     {
-        if (c == 'i') {
-            token = lexTokenStateMachineAlphaIntKeyword(input, pos);
+        long current_pos = (*pos);
+        struct Token new_token;
+        new_token.token_type = IDENTIFIER;
+        if (c == 'i')
+        {
+            new_token = lexTokenStateMachineAlphaIntKeyword(input, pos);
         }
-        else if (c == 'r') {
-            token = lexTokenStateMachineAlphaReturnKeyword(input, pos);
+        else if (c == 'r')
+        {
+            new_token = lexTokenStateMachineAlphaReturnKeyword(input, pos);
         }
 
-        if (token.token_type != IDENTIFIER) {
+        if (new_token.token_type != IDENTIFIER)
+        {
+            if (current_pos == init_pos)
+            {
+                return new_token;
+            }
+            (*pos) = current_pos;
             return token;
         }
 
