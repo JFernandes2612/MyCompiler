@@ -22,11 +22,15 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+    printf("Input file:\n%s\n\n", input);
+
     if ((input = minimizeInput(input)) == NULL)
     {
         printf("Error minimizing input\n");
         return -1;
     }
+
+    printf("Minimized input file:\n%s\n\n", input);
 
     const struct Token* tokens;
 
@@ -34,6 +38,10 @@ int main(int argc, char *argv[])
         printf("Error tokenizing input\n");
         return -1;
     }
+
+    printf("Lexer tokens:\n");
+    printTokenArray(tokens);
+    printf("\n\n");
 
     return 0;
 }
