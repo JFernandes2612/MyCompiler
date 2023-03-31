@@ -6,9 +6,6 @@
 
 const struct Token lexTokenStateMachineDigit(const char *input, long *pos)
 {
-    struct Token token;
-    token.token_type = INT_LITERAL_T;
-
     char c = input[*pos];
 
     while (isdigit(c))
@@ -17,13 +14,12 @@ const struct Token lexTokenStateMachineDigit(const char *input, long *pos)
         c = input[*pos];
     }
 
-    return token;
+    return tokenFactory(INT_LITERAL_T);
 }
 
 const struct Token lexTokenStateMachineAlphaKeyword(const char *input, long *pos, const char *target_word, const enum TokenType token_type)
 {
-    struct Token token;
-    token.token_type = IDENTIFIER_T;
+    struct Token token = tokenFactory(IDENTIFIER_T);
 
     long target_word_length = strlen(target_word);
 
@@ -32,7 +28,7 @@ const struct Token lexTokenStateMachineAlphaKeyword(const char *input, long *pos
 
     if (strcmp(comparation_input, target_word) == 0)
     {
-        token.token_type = token_type;
+        token = tokenFactory(token_type);
         (*pos) += target_word_length;
     }
 
@@ -51,18 +47,17 @@ const struct Token lexTokenStateMachineAlphaReturnKeyword(const char *input, lon
 
 const struct Token lexTokenStateMachineAlpha(const char *input, long *pos)
 {
-    struct Token token;
-    token.token_type = IDENTIFIER_T;
+    struct Token token = tokenFactory(IDENTIFIER_T);
 
     char c = input[*pos];
     int first_time = 1;
 
     while (isalpha(c) || isdigit(c) || c == "_")
     {
-        if (first_time) {
+        if (first_time)
+        {
             first_time = 0;
-            struct Token new_token;
-            new_token.token_type = IDENTIFIER_T;
+            struct Token new_token = tokenFactory(IDENTIFIER_T);
             if (c == 'i')
             {
                 new_token = lexTokenStateMachineAlphaIntKeyword(input, pos);
@@ -80,7 +75,7 @@ const struct Token lexTokenStateMachineAlpha(const char *input, long *pos)
             }
             continue;
         }
-        
+
         (*pos)++;
         c = input[*pos];
     }
@@ -90,8 +85,7 @@ const struct Token lexTokenStateMachineAlpha(const char *input, long *pos)
 
 const struct Token lexTokenStateMachine(const char *input, long *pos)
 {
-    struct Token token;
-    token.token_type = ERROR_T;
+    struct Token token = tokenFactory(ERROR_T);
 
     char c = input[*pos];
 
@@ -104,6 +98,12 @@ const struct Token lexTokenStateMachine(const char *input, long *pos)
     if (isdigit(c))
     {
         token = lexTokenStateMachineDigit(input, pos);
+
+        // Invalidate identifiers that start with a number
+        if (isalpha(input[*pos]))
+        {
+            token = tokenFactory(ERROR_T);
+        }
     }
     else if (isalpha(c))
     {
@@ -114,22 +114,22 @@ const struct Token lexTokenStateMachine(const char *input, long *pos)
         switch (c)
         {
         case '(':
-            token.token_type = OPEN_PAREN_T;
+            token = tokenFactory(OPEN_PAREN_T);
             break;
         case ')':
-            token.token_type = CLOSE_PAREN_T;
+            token = tokenFactory(CLOSE_PAREN_T);
             break;
         case '{':
-            token.token_type = OPEN_BRACE_T;
+            token = tokenFactory(OPEN_BRACE_T);
             break;
         case '}':
-            token.token_type = CLOSE_BRACE_T;
+            token = tokenFactory(CLOSE_BRACE_T);
             break;
         case ';':
-            token.token_type = SEMICOLON_T;
+            token = tokenFactory(SEMICOLON_T);
             break;
         case '\0':
-            token.token_type = EOF_T;
+            token = tokenFactory(EOF_T);
             break;
         }
         (*pos)++;

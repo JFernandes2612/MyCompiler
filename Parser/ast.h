@@ -9,6 +9,8 @@ enum NodeType
     RETURN_KEYWORD,
     IDENTIFIER,
     INT_LITERAL,
+
+    NONE,
 };
 
 struct Node
@@ -18,6 +20,10 @@ struct Node
     long number_of_children;
     struct Node *children;
 };
+
+const struct Node nodeFactory(const enum NodeType nodeType);
+
+void addChild(struct Node *node);
 
 struct Ast
 {

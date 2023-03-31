@@ -1,11 +1,21 @@
 #include "parser.h"
+#include <stdlib.h>
 
-const struct Ast parse(const struct Token *tokens) {
-    struct Ast ast;
+const struct Node buildProgram(struct Node *node, const struct Token *tokens, long *pos)
+{
+    struct Node program = nodeFactory(PROGRAM);
 
-    struct Node program;
+    return program;
+}
 
-    ast.program = program;
-    
+const struct Ast *parse(const struct Token *tokens)
+{
+    struct Ast *ast = malloc(sizeof(struct Ast));
+
+    struct Node program = nodeFactory(PROGRAM);
+    long pos = 0;
+
+    ast->program = buildProgram(&program, tokens, &pos);
+
     return ast;
 }

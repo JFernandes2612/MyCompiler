@@ -39,8 +39,12 @@ int main(int argc, char *argv[])
     printTokenArray(tokens);
     printf("\n\n");
 
-    struct Ast ast;
-    ast = parse(tokens);
+    struct Ast *ast;
+    if ((ast = parse(tokens)) == NULL)
+    {
+        printf("Error parsing input\n");
+        return -1;
+    }
 
     return 0;
 }

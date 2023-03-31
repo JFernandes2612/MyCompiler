@@ -1,6 +1,6 @@
 #include "token.h"
 
-const char* tokenToString(const struct Token token)
+const char *tokenToString(const struct Token token)
 {
     switch (token.token_type)
     {
@@ -42,16 +42,26 @@ const char* tokenToString(const struct Token token)
     }
 }
 
-void printToken(const struct Token token) {
+const struct Token tokenFactory(const enum TokenType tokenType)
+{
+    struct Token ret;
+    ret.token_type = tokenType;
+    return ret;
+}
+
+void printToken(const struct Token token)
+{
     printf(tokenToString(token));
 }
 
-void printTokenArray(const struct Token* tokens) {
+void printTokenArray(const struct Token *tokens)
+{
     long counter = 0;
 
     printf("{ ");
 
-    while (tokens[counter].token_type != EOF_T) {
+    while (tokens[counter].token_type != EOF_T)
+    {
         printToken(tokens[counter]);
         printf(", ");
         counter++;

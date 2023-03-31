@@ -24,6 +24,8 @@ struct Token
     enum TokenType token_type;
 };
 
+const struct Token tokenFactory(const enum TokenType tokenType);
+
 const char *tokenToString(const struct Token token);
 
 void printToken(const struct Token token);
