@@ -40,7 +40,7 @@ const char *tokenToString(const struct Token token)
     default:
         break;
     }
-    
+
     return "";
 }
 

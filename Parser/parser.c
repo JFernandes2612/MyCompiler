@@ -1,22 +1,23 @@
 #include "parser.h"
 #include <stdlib.h>
 
-int testToken(struct Token token, enum TokenType tokenType)
+int testToken(struct Token token, enum TokenType token_type)
 {
-    if (token.token_type != tokenType)
+    if (token.token_type != token_type)
     {
-        printf("Expected '%s' found '%s'\n", tokenToString(tokenFactory(tokenType)), tokenToString(token));
+        printf("Expected '%s' found '%s'\n", tokenToString(tokenFactory(token_type)), tokenToString(token));
         return -1;
     }
 
     return 0;
 }
 
-int testTokens(const struct Token *tokens, long *pos, const enum TokenType* tokenType, const long number_of_tests) 
+int testTokens(const struct Token *tokens, long *pos, const enum TokenType *token_types, const long number_of_tests)
 {
     for (long i = 0; i < number_of_tests; i++)
     {
-        if (testToken(tokens[*pos], tokenType[i])) {
+        if (testToken(tokens[*pos], token_types[i]))
+        {
             return -1;
         }
 
@@ -67,7 +68,8 @@ int buildFunction(struct Node *root, const struct Token *tokens, long *pos)
 {
     const enum TokenType token_to_test[5] = {INT_KEYWORD_T, IDENTIFIER_T, OPEN_PAREN_T, CLOSE_PAREN_T, OPEN_BRACE_T};
 
-    if (testTokens(tokens, pos, token_to_test, 5)) {
+    if (testTokens(tokens, pos, token_to_test, 5))
+    {
         return -1;
     }
 
@@ -85,7 +87,7 @@ int buildFunction(struct Node *root, const struct Token *tokens, long *pos)
     return 0;
 }
 
-int buildBody(struct Node *root, const struct Token *tokens, long *pos) 
+int buildBody(struct Node *root, const struct Token *tokens, long *pos)
 {
     struct Node returnNode = nodeFactory(RETURN);
     buildRule(&returnNode, tokens, pos);
@@ -97,7 +99,8 @@ int buildReturn(struct Node *root, const struct Token *tokens, long *pos)
 {
     const enum TokenType token_to_test[3] = {RETURN_KEYWORD_T, INT_LITERAL_T, SEMICOLON_T};
 
-    if (testTokens(tokens, pos, token_to_test, 3)) {
+    if (testTokens(tokens, pos, token_to_test, 3))
+    {
         return -1;
     }
 

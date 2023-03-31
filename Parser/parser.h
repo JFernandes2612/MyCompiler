@@ -4,9 +4,9 @@
 #include "ast.h"
 #include "../Lexer/token.h"
 
-int testToken(struct Token token, enum TokenType tokenType);
+int testToken(struct Token token, enum TokenType token_type);
 
-int testTokens(const struct Token *tokens, long *pos, const enum TokenType* tokenType, const long number_of_tests);
+int testTokens(const struct Token *tokens, long *pos, const enum TokenType *token_types, const long number_of_tests);
 
 int buildRule(struct Node *root, const struct Token *tokens, long *pos);
 
