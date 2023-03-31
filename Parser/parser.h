@@ -4,7 +4,19 @@
 #include "ast.h"
 #include "../Lexer/token.h"
 
-const struct Node buildProgram(struct Node *node, const struct Token *tokens, long *pos);
+int testToken(struct Token token, enum TokenType tokenType);
+
+int testTokens(const struct Token *tokens, long *pos, const enum TokenType* tokenType, const long number_of_tests);
+
+int buildRule(struct Node *root, const struct Token *tokens, long *pos);
+
+int buildProgram(struct Node *root, const struct Token *tokens, long *pos);
+
+int buildFunction(struct Node *root, const struct Token *tokens, long *pos);
+
+int buildBody(struct Node *root, const struct Token *tokens, long *pos);
+
+int buildReturn(struct Node *root, const struct Token *tokens, long *pos);
 
 const struct Ast *parse(const struct Token *tokens);
 

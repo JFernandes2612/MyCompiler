@@ -46,5 +46,8 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+    printf("AST:\n");
+    printAst(*ast);
+
     return 0;
 }

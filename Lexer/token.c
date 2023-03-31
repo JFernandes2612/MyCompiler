@@ -40,6 +40,8 @@ const char *tokenToString(const struct Token token)
     default:
         break;
     }
+    
+    return "";
 }
 
 const struct Token tokenFactory(const enum TokenType tokenType)
