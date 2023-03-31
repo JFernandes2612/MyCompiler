@@ -28,6 +28,10 @@ const char *nodeToString(const struct Node node)
     case RETURN:
         return "RETURN";
         break;
+
+    case INT_LITERAL:
+        return "INT_LITERAL";
+        break;
     }
 
     return "";

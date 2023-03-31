@@ -4,10 +4,11 @@
 enum NodeType
 {
     PROGRAM,
-
     FUNCTION,
     BODY,
-    RETURN
+    RETURN,
+
+    INT_LITERAL,
 };
 
 struct Node

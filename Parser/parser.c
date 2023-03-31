@@ -1,13 +1,28 @@
 #include "parser.h"
 #include <stdlib.h>
 
-int testToken(struct Token token, enum TokenType token_type)
+int addChildToRootAst(struct Node *root, const struct Token *tokens, long *pos, const enum NodeType node_type)
 {
+    struct Node functionNode = nodeFactory(node_type);
+    if (buildRule(&functionNode, tokens, pos))
+    {
+        return -1;
+    }
+    addChild(root, functionNode);
+
+    return 0;
+}
+
+int testToken(const struct Token *tokens, long *pos, enum TokenType token_type)
+{
+    const struct Token token = tokens[*pos];
     if (token.token_type != token_type)
     {
         printf("Expected '%s' found '%s'\n", tokenToString(tokenFactory(token_type)), tokenToString(token));
         return -1;
     }
+
+    (*pos)++;
 
     return 0;
 }
@@ -16,12 +31,10 @@ int testTokens(const struct Token *tokens, long *pos, const enum TokenType *toke
 {
     for (long i = 0; i < number_of_tests; i++)
     {
-        if (testToken(tokens[*pos], token_types[i]))
+        if (testToken(tokens, pos, token_types[i]))
         {
             return -1;
         }
-
-        (*pos)++;
     }
 
     return 0;
@@ -43,6 +56,9 @@ int buildRule(struct Node *root, const struct Token *tokens, long *pos)
     case RETURN:
         return buildReturn(root, tokens, pos);
         break;
+    case INT_LITERAL:
+        return buildIntLiteral(root, tokens, pos);
+        break;
     default:
         break;
     }
@@ -52,11 +68,12 @@ int buildRule(struct Node *root, const struct Token *tokens, long *pos)
 
 int buildProgram(struct Node *root, const struct Token *tokens, long *pos)
 {
-    struct Node functionNode = nodeFactory(FUNCTION);
-    buildRule(&functionNode, tokens, pos);
-    addChild(root, functionNode);
+    if (addChildToRootAst(root, tokens, pos, FUNCTION))
+    {
+        return -1;
+    }
 
-    if (testToken(tokens[*pos], EOF_T))
+    if (testToken(tokens, pos, EOF_T))
     {
         return -1;
     }
@@ -73,33 +90,53 @@ int buildFunction(struct Node *root, const struct Token *tokens, long *pos)
         return -1;
     }
 
-    struct Node bodyNode = nodeFactory(BODY);
-    buildRule(&bodyNode, tokens, pos);
-    addChild(root, bodyNode);
-
-    if (testToken(tokens[*pos], CLOSE_BRACE_T))
+    if (addChildToRootAst(root, tokens, pos, BODY))
     {
         return -1;
     }
 
-    (*pos)++;
+    if (testToken(tokens, pos, CLOSE_BRACE_T))
+    {
+        return -1;
+    }
 
     return 0;
 }
 
 int buildBody(struct Node *root, const struct Token *tokens, long *pos)
 {
-    struct Node returnNode = nodeFactory(RETURN);
-    buildRule(&returnNode, tokens, pos);
-    addChild(root, returnNode);
+    if (addChildToRootAst(root, tokens, pos, RETURN))
+    {
+        return -1;
+    }
+
     return 0;
 }
 
 int buildReturn(struct Node *root, const struct Token *tokens, long *pos)
 {
-    const enum TokenType token_to_test[3] = {RETURN_KEYWORD_T, INT_LITERAL_T, SEMICOLON_T};
+    if (testToken(tokens, pos, RETURN_KEYWORD_T))
+    {
+        return -1;
+    }
 
-    if (testTokens(tokens, pos, token_to_test, 3))
+    // Will later change to expression for now it can only return int literals
+    if (addChildToRootAst(root, tokens, pos, INT_LITERAL))
+    {
+        return -1;
+    }
+
+    if (testToken(tokens, pos, SEMICOLON_T))
+    {
+        return -1;
+    }
+
+    return 0;
+}
+
+int buildIntLiteral(struct Node *root, const struct Token *tokens, long *pos)
+{
+    if (testToken(tokens, pos, INT_LITERAL_T))
     {
         return -1;
     }
