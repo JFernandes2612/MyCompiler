@@ -99,10 +99,14 @@ void freeToken(const struct Token *token)
 
 void freeTokens(const struct Token **tokens)
 {
-    for (long i = 0; i < sizeof(tokens) / sizeof(struct Token); i++)
+    long counter = 0;
+
+    while (tokens[counter]->token_type != EOF_T)
     {
-        freeToken(tokens[i]);
+        freeToken(tokens[counter]);
+        counter++;
     }
 
+    freeToken(tokens[counter]);
     free(tokens);
 }
