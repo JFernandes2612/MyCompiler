@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 
     printf("Input file:\n%s\n\n", input);
 
-    const struct Token *tokens;
+    const struct Token **tokens;
 
     if ((tokens = lex(input)) == NULL)
     {
@@ -47,7 +47,11 @@ int main(int argc, char *argv[])
     }
 
     printf("AST:\n");
-    printAst(*ast);
+    printAst(ast);
+
+    freeAst(ast);
+    freeTokens(tokens);
+    free(input);
 
     return 0;
 }

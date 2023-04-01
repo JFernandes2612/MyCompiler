@@ -1,10 +1,10 @@
 #include "parser.h"
 #include <stdlib.h>
 
-int testRule(struct Node *root, const struct Token *tokens, long *pos, const enum NodeType node_type)
+int testRule(const struct Node *root, const struct Token **tokens, long *pos, const enum NodeType node_type)
 {
-    struct Node functionNode = nodeFactory(node_type);
-    if (buildRule(&functionNode, tokens, pos))
+    struct Node *functionNode = nodeFactory(node_type);
+    if (buildRule(functionNode, tokens, pos))
     {
         return -1;
     }
@@ -13,12 +13,13 @@ int testRule(struct Node *root, const struct Token *tokens, long *pos, const enu
     return 0;
 }
 
-int testToken(const struct Token *tokens, long *pos, const enum TokenType token_type)
+int testToken(const struct Token **tokens, long *pos, const enum TokenType token_type)
 {
-    const struct Token token = tokens[*pos];
-    if (token.token_type != token_type)
+    const struct Token *token = tokens[*pos];
+
+    if (token->token_type != token_type)
     {
-        printf("Expected '%s' found '%s'\n", tokenToString(tokenFactory(token_type)), tokenToString(token));
+        printf("Expected '%s' found '%s'\n", tokenToString(tokenFactory(token_type, NULL)), tokenToString(token));
         return -1;
     }
 
@@ -27,7 +28,7 @@ int testToken(const struct Token *tokens, long *pos, const enum TokenType token_
     return 0;
 }
 
-int testTokens(const struct Token *tokens, long *pos, const enum TokenType *token_types, const long number_of_tests)
+int testTokens(const struct Token **tokens, long *pos, const enum TokenType *token_types, const long number_of_tests)
 {
     for (long i = 0; i < number_of_tests; i++)
     {
@@ -40,7 +41,7 @@ int testTokens(const struct Token *tokens, long *pos, const enum TokenType *toke
     return 0;
 }
 
-int buildRule(struct Node *root, const struct Token *tokens, long *pos)
+int buildRule(const struct Node *root, const struct Token **tokens, long *pos)
 {
     switch (root->nodeType)
     {
@@ -66,7 +67,7 @@ int buildRule(struct Node *root, const struct Token *tokens, long *pos)
     return -1;
 }
 
-int buildProgram(struct Node *root, const struct Token *tokens, long *pos)
+int buildProgram(const struct Node *root, const struct Token **tokens, long *pos)
 {
     if (testRule(root, tokens, pos, FUNCTION))
     {
@@ -81,7 +82,7 @@ int buildProgram(struct Node *root, const struct Token *tokens, long *pos)
     return 0;
 }
 
-int buildFunction(struct Node *root, const struct Token *tokens, long *pos)
+int buildFunction(const struct Node *root, const struct Token **tokens, long *pos)
 {
     const enum TokenType token_to_test[5] = {INT_KEYWORD_T, IDENTIFIER_T, OPEN_PAREN_T, CLOSE_PAREN_T, OPEN_BRACE_T};
 
@@ -103,7 +104,7 @@ int buildFunction(struct Node *root, const struct Token *tokens, long *pos)
     return 0;
 }
 
-int buildBody(struct Node *root, const struct Token *tokens, long *pos)
+int buildBody(const struct Node *root, const struct Token **tokens, long *pos)
 {
     if (testRule(root, tokens, pos, RETURN))
     {
@@ -113,7 +114,7 @@ int buildBody(struct Node *root, const struct Token *tokens, long *pos)
     return 0;
 }
 
-int buildReturn(struct Node *root, const struct Token *tokens, long *pos)
+int buildReturn(const struct Node *root, const struct Token **tokens, long *pos)
 {
     if (testToken(tokens, pos, RETURN_KEYWORD_T))
     {
@@ -134,7 +135,7 @@ int buildReturn(struct Node *root, const struct Token *tokens, long *pos)
     return 0;
 }
 
-int buildIntLiteral(struct Node *root, const struct Token *tokens, long *pos)
+int buildIntLiteral(const struct Node *root, const struct Token **tokens, long *pos)
 {
     if (testToken(tokens, pos, INT_LITERAL_T))
     {
@@ -144,14 +145,14 @@ int buildIntLiteral(struct Node *root, const struct Token *tokens, long *pos)
     return 0;
 }
 
-const struct Ast *parse(const struct Token *tokens)
+const struct Ast *parse(const struct Token **tokens)
 {
     struct Ast *ast = malloc(sizeof(struct Ast));
 
     long pos = 0;
     ast->program = nodeFactory(PROGRAM);
 
-    if (buildRule(&ast->program, tokens, &pos))
+    if (buildRule(ast->program, tokens, &pos))
     {
         return NULL;
     }

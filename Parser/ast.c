@@ -2,19 +2,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-const struct Node nodeFactory(const enum NodeType nodeType)
+const struct Node *nodeFactory(const enum NodeType nodeType)
 {
-    struct Node ret;
-    ret.number_of_children = 0;
-    ret.nodeType = nodeType;
-    ret.children = NULL;
+    struct Node *ret = malloc(sizeof(struct Node));
+    ret->nodeType = nodeType;
+    ret->number_of_children = 0;
+    ret->children = NULL;
 
     return ret;
 }
 
-const char *nodeToString(const struct Node node)
+const char *nodeToString(const struct Node *node)
 {
-    switch (node.nodeType)
+    switch (node->nodeType)
     {
     case PROGRAM:
         return "PROGRAM";
@@ -37,7 +37,7 @@ const char *nodeToString(const struct Node node)
     return "";
 }
 
-void printNode(const struct Node node, const long indent)
+void printNode(const struct Node *node, const long indent)
 {
     for (long i = 0; i < indent; i++)
     {
@@ -47,28 +47,43 @@ void printNode(const struct Node node, const long indent)
     printf(nodeToString(node));
     printf("\n");
 
-    for (long i = 0; i < node.number_of_children; i++)
+    for (long i = 0; i < node->number_of_children; i++)
     {
-        printNode(node.children[i], indent + 1);
+        printNode(node->children[i], indent + 1);
     }
 }
 
-void addChild(struct Node *node, struct Node node_to_add)
+void addChild(struct Node *node, const struct Node *node_to_add)
 {
 
     if (node->number_of_children == 0)
     {
-        node->children = malloc(sizeof(struct Node));
+        node->children = malloc(sizeof(struct Node *));
     }
     else
     {
-        node->children = realloc(node->children, sizeof(struct Node) * (node->number_of_children + 1));
+        node->children = realloc(node->children, sizeof(struct Node *) * (node->number_of_children + 1));
     }
     node->number_of_children++;
     node->children[node->number_of_children - 1] = node_to_add;
 }
 
-void printAst(const struct Ast ast)
+void freeNode(const struct Node *node)
 {
-    printNode(ast.program, 0);
+    for (int i = 0; i < node->number_of_children; i++)
+    {
+        freeNode(node->children[i]);
+    }
+
+    free(node);
+}
+
+void printAst(const struct Ast *ast)
+{
+    printNode(ast->program, 0);
+}
+
+void freeAst(const struct Ast *ast)
+{
+    freeNode(ast->program);
 }

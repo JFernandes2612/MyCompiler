@@ -1,6 +1,8 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
+#include "../Utils/utils.h"
+
 enum TokenType
 {
     OPEN_BRACE_T,
@@ -22,14 +24,19 @@ enum TokenType
 struct Token
 {
     enum TokenType token_type;
+    struct ArbitraryValue *value;
 };
 
-const struct Token tokenFactory(const enum TokenType tokenType);
+const struct Token *tokenFactory(const enum TokenType token_type, const struct ArbitraryValue *arbitrary_value);
 
-const char *tokenToString(const struct Token token);
+const char *tokenToString(const struct Token *token);
 
-void printToken(const struct Token token);
+void printToken(const struct Token *token);
 
-void printTokenArray(const struct Token *tokens);
+void printTokenArray(const struct Token **tokens);
+
+void freeToken(const struct Token *token);
+
+void freeTokens(const struct Token **tokens);
 
 #endif

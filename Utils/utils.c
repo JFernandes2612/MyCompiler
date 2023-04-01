@@ -47,3 +47,31 @@ const char *readFile(const char *path)
 
     return ret;
 }
+
+const struct ArbitraryValue *arbitraryValueFactory(const enum Type type, const void *value)
+{
+    struct ArbitraryValue *ret = malloc(sizeof(struct ArbitraryValue));
+    ret->type = type;
+    ret->value = value;
+
+    return ret;
+}
+
+const char *arbitraryValueToString(const struct ArbitraryValue *arbitrary_value)
+{
+    char *buff = malloc(BUFF_SIZE);
+    switch (arbitrary_value->type)
+    {
+    case INT:
+        itoa(*((int *)arbitrary_value->value), buff, 10);
+        return buff;
+        break;
+    case STRING:
+        return (char *)arbitrary_value->value;
+        break;
+    default:
+        break;
+    }
+
+    return "";
+}
