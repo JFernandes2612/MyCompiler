@@ -1,7 +1,7 @@
 #include "parser.h"
 #include <stdlib.h>
 
-int addChildToRootAst(struct Node *root, const struct Token *tokens, long *pos, const enum NodeType node_type)
+int testRule(struct Node *root, const struct Token *tokens, long *pos, const enum NodeType node_type)
 {
     struct Node functionNode = nodeFactory(node_type);
     if (buildRule(&functionNode, tokens, pos))
@@ -13,7 +13,7 @@ int addChildToRootAst(struct Node *root, const struct Token *tokens, long *pos, 
     return 0;
 }
 
-int testToken(const struct Token *tokens, long *pos, enum TokenType token_type)
+int testToken(const struct Token *tokens, long *pos, const enum TokenType token_type)
 {
     const struct Token token = tokens[*pos];
     if (token.token_type != token_type)
@@ -68,7 +68,7 @@ int buildRule(struct Node *root, const struct Token *tokens, long *pos)
 
 int buildProgram(struct Node *root, const struct Token *tokens, long *pos)
 {
-    if (addChildToRootAst(root, tokens, pos, FUNCTION))
+    if (testRule(root, tokens, pos, FUNCTION))
     {
         return -1;
     }
@@ -90,7 +90,7 @@ int buildFunction(struct Node *root, const struct Token *tokens, long *pos)
         return -1;
     }
 
-    if (addChildToRootAst(root, tokens, pos, BODY))
+    if (testRule(root, tokens, pos, BODY))
     {
         return -1;
     }
@@ -105,7 +105,7 @@ int buildFunction(struct Node *root, const struct Token *tokens, long *pos)
 
 int buildBody(struct Node *root, const struct Token *tokens, long *pos)
 {
-    if (addChildToRootAst(root, tokens, pos, RETURN))
+    if (testRule(root, tokens, pos, RETURN))
     {
         return -1;
     }
@@ -121,7 +121,7 @@ int buildReturn(struct Node *root, const struct Token *tokens, long *pos)
     }
 
     // Will later change to expression for now it can only return int literals
-    if (addChildToRootAst(root, tokens, pos, INT_LITERAL))
+    if (testRule(root, tokens, pos, INT_LITERAL))
     {
         return -1;
     }

@@ -4,9 +4,9 @@
 #include "ast.h"
 #include "../Lexer/token.h"
 
-int addChildToRootAst(struct Node *root, const struct Token *tokens, long *pos, const enum NodeType node_type);
+int testRule(struct Node *root, const struct Token *tokens, long *pos, const enum NodeType node_type);
 
-int testToken(const struct Token *tokens, long *pos, enum TokenType token_type);
+int testToken(const struct Token *tokens, long *pos, const enum TokenType token_type);
 
 int testTokens(const struct Token *tokens, long *pos, const enum TokenType *token_types, const long number_of_tests);
 
