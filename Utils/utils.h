@@ -21,4 +21,15 @@ const struct ArbitraryValue *arbitraryValueFactory(const enum Type type, const v
 
 const char *arbitraryValueToString(const struct ArbitraryValue *arbitrary_value);
 
+struct StringKeyArbitraryValueMapEntry
+{
+    char *key;
+    struct ArbitraryValue *value;
+};
+
+struct StringKeyArbitraryValueMap
+{
+    struct StringKeyArbitraryValueMapEntry *entries;
+};
+
 #endif

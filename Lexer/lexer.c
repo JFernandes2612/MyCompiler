@@ -23,11 +23,13 @@ const struct Token *lexTokenStateMachineDigit(const char *input, long *pos)
     return tokenFactory(INT_LITERAL_T, arbitraryValueFactory(INT, value));
 }
 
-const struct Token *lexTokenStateMachineAlphaKeyword(const char *input, long *pos, const char *target_word, const enum TokenType token_type)
+const struct Token *lexTokenStateMachineAlphaKeyword(const char *input, long *pos, const char *target_word, const enum TokenType token_type, char *value, long *counter)
 {
     struct Token *token = tokenFactory(IDENTIFIER_T, NULL);
 
     long target_word_length = strlen(target_word);
+    strcpy(value, target_word);
+    (*counter) = target_word_length;
 
     char comparation_input[TOKEN_MAX_SIZE];
     strncpy(comparation_input, input + (*pos), target_word_length);
@@ -43,14 +45,14 @@ const struct Token *lexTokenStateMachineAlphaKeyword(const char *input, long *po
     return token;
 }
 
-const struct Token *lexTokenStateMachineAlphaIntKeyword(const char *input, long *pos)
+const struct Token *lexTokenStateMachineAlphaIntKeyword(const char *input, long *pos, char *value, long *counter)
 {
-    return lexTokenStateMachineAlphaKeyword(input, pos, "int", INT_KEYWORD_T);
+    return lexTokenStateMachineAlphaKeyword(input, pos, "int", INT_KEYWORD_T, value, counter);
 }
 
-const struct Token *lexTokenStateMachineAlphaReturnKeyword(const char *input, long *pos)
+const struct Token *lexTokenStateMachineAlphaReturnKeyword(const char *input, long *pos, char *value, long *counter)
 {
-    return lexTokenStateMachineAlphaKeyword(input, pos, "return", RETURN_KEYWORD_T);
+    return lexTokenStateMachineAlphaKeyword(input, pos, "return", RETURN_KEYWORD_T, value, counter);
 }
 
 const struct Token *lexTokenStateMachineAlpha(const char *input, long *pos)
@@ -62,6 +64,8 @@ const struct Token *lexTokenStateMachineAlpha(const char *input, long *pos)
     char c = input[*pos];
     int may_be_keyword = 1;
 
+    int initPos = *pos;
+
     while (isalpha(c) || isdigit(c) || c == "_")
     {
         value[counter] = c;
@@ -71,11 +75,11 @@ const struct Token *lexTokenStateMachineAlpha(const char *input, long *pos)
             struct Token *new_token = tokenFactory(IDENTIFIER_T, NULL);
             if (c == 'i')
             {
-                new_token = lexTokenStateMachineAlphaIntKeyword(input, pos);
+                new_token = lexTokenStateMachineAlphaIntKeyword(input, pos, value, &counter);
             }
             else if (c == 'r')
             {
-                new_token = lexTokenStateMachineAlphaReturnKeyword(input, pos);
+                new_token = lexTokenStateMachineAlphaReturnKeyword(input, pos, value, &counter);
             }
 
             c = input[*pos];
@@ -86,6 +90,8 @@ const struct Token *lexTokenStateMachineAlpha(const char *input, long *pos)
                 freeToken(token);
                 return new_token;
             }
+
+            continue;
         }
 
         counter++;
