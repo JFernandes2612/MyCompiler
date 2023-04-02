@@ -17,18 +17,18 @@ struct Node
 
     long number_of_children;
     struct Node **children;
-    struct StringKeyArbitraryValueMap* data;
+    struct StringKeyArbitraryValueMap *data;
 };
 
-const struct Node *nodeFactory(const enum NodeType nodeType);
+struct Node *nodeFactory(const enum NodeType nodeType);
 
-void addChild(struct Node *node, const struct Node *node_to_add);
+void addChild(struct Node *node, struct Node *node_to_add);
 
 const char *nodeToString(const struct Node *node);
 
 void printNode(const struct Node *node, const long indent);
 
-void freeNode(const struct Node *node);
+void freeNode(struct Node *node);
 
 struct Ast
 {
@@ -37,6 +37,6 @@ struct Ast
 
 void printAst(const struct Ast *ast);
 
-void freeAst(const struct Ast *ast);
+void freeAst(struct Ast *ast);
 
 #endif

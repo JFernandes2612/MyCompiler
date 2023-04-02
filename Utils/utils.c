@@ -4,7 +4,7 @@
 #include <string.h>
 
 // Reads a file and returns it in a form of a string (char*)
-const char *readFile(const char *path)
+char *readFile(const char *path)
 {
     FILE *f;
     if ((f = fopen(path, "r")) == NULL)
@@ -48,7 +48,7 @@ const char *readFile(const char *path)
     return ret;
 }
 
-const struct Pos *posFactory(const long line, const long column)
+struct Pos *posFactory(const long line, const long column)
 {
     struct Pos *ret = malloc(sizeof(struct Pos));
     ret->line = line;
@@ -56,7 +56,7 @@ const struct Pos *posFactory(const long line, const long column)
     return ret;
 }
 
-const struct Pos *posCopy(const struct Pos *pos)
+struct Pos *posCopy(const struct Pos *pos)
 {
     struct Pos *ret = malloc(sizeof(struct Pos));
     ret->line = pos->line;
@@ -85,7 +85,7 @@ const char *posToString(const struct Pos *pos)
     char *buff = malloc(BUFF_SIZE);
 
     sprintf(buff, "[line: %d, column: %d]", pos->line, pos->column);
-    
+
     buff = realloc(buff, strlen(buff) + 1);
 
     return buff;
@@ -97,7 +97,7 @@ void forward(long *pos_l, struct Pos *pos_p, const long n)
     (*pos_l) += n;
 }
 
-const struct ArbitraryValue *arbitraryValueFactory(const enum Type type, const void *value)
+struct ArbitraryValue *arbitraryValueFactory(const enum Type type, void *value)
 {
     struct ArbitraryValue *ret = malloc(sizeof(struct ArbitraryValue));
     ret->type = type;

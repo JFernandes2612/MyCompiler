@@ -1,6 +1,7 @@
 #include "token.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 const char *tokenToString(const struct Token *token)
 {
@@ -43,7 +44,7 @@ const char *tokenToString(const struct Token *token)
         break;
     }
 
-    if (token->pos != NULL) 
+    if (token->pos != NULL)
     {
         sprintf(token_string, "%s %s", token_string, posToString(token->pos));
     }
@@ -56,7 +57,7 @@ const char *tokenToString(const struct Token *token)
     return token_string;
 }
 
-const struct Token *tokenFactory(const enum TokenType token_type, const struct Pos *pos, const struct ArbitraryValue *arbitrary_value)
+struct Token *tokenFactory(const enum TokenType token_type, struct Pos *pos, struct ArbitraryValue *arbitrary_value)
 {
     struct Token *ret = malloc(sizeof(struct Token));
     ret->token_type = token_type;
@@ -70,7 +71,7 @@ void printToken(const struct Token *token)
     printf(tokenToString(token));
 }
 
-void printTokenArray(const struct Token **tokens)
+void printTokenArray(struct Token **tokens)
 {
     long counter = 0;
 
@@ -88,14 +89,14 @@ void printTokenArray(const struct Token **tokens)
     printf(" }\n");
 }
 
-void freeToken(const struct Token *token)
+void freeToken(struct Token *token)
 {
     if (token->value != NULL)
     {
         free(token->value);
     }
 
-    if (token->pos != NULL) 
+    if (token->pos != NULL)
     {
         free(token->pos);
     }
@@ -103,7 +104,7 @@ void freeToken(const struct Token *token)
     free(token);
 }
 
-void freeTokens(const struct Token **tokens)
+void freeTokens(struct Token **tokens)
 {
     long counter = 0;
 

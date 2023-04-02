@@ -1,7 +1,8 @@
 #include "parser.h"
 #include <stdlib.h>
+#include <stdio.h>
 
-int testRule(const struct Node *root, const struct Token **tokens, long *pos, const enum NodeType node_type)
+int testRule(struct Node *root, struct Token **tokens, long *pos, const enum NodeType node_type)
 {
     struct Node *functionNode = nodeFactory(node_type);
     if (buildRule(functionNode, tokens, pos))
@@ -13,7 +14,7 @@ int testRule(const struct Node *root, const struct Token **tokens, long *pos, co
     return 0;
 }
 
-int testToken(const struct Token **tokens, long *pos, const enum TokenType token_type)
+int testToken(struct Token **tokens, long *pos, const enum TokenType token_type)
 {
     const struct Token *token = tokens[*pos];
 
@@ -28,7 +29,7 @@ int testToken(const struct Token **tokens, long *pos, const enum TokenType token
     return 0;
 }
 
-int testTokens(const struct Token **tokens, long *pos, const enum TokenType *token_types, const long number_of_tests)
+int testTokens(struct Token **tokens, long *pos, const enum TokenType *token_types, const long number_of_tests)
 {
     for (long i = 0; i < number_of_tests; i++)
     {
@@ -41,7 +42,7 @@ int testTokens(const struct Token **tokens, long *pos, const enum TokenType *tok
     return 0;
 }
 
-int buildRule(const struct Node *root, const struct Token **tokens, long *pos)
+int buildRule(struct Node *root, struct Token **tokens, long *pos)
 {
     switch (root->nodeType)
     {
@@ -67,7 +68,7 @@ int buildRule(const struct Node *root, const struct Token **tokens, long *pos)
     return -1;
 }
 
-int buildProgram(const struct Node *root, const struct Token **tokens, long *pos)
+int buildProgram(struct Node *root, struct Token **tokens, long *pos)
 {
     if (testRule(root, tokens, pos, FUNCTION))
     {
@@ -82,7 +83,7 @@ int buildProgram(const struct Node *root, const struct Token **tokens, long *pos
     return 0;
 }
 
-int buildFunction(const struct Node *root, const struct Token **tokens, long *pos)
+int buildFunction(struct Node *root, struct Token **tokens, long *pos)
 {
     const enum TokenType token_to_test[5] = {INT_KEYWORD_T, IDENTIFIER_T, OPEN_PAREN_T, CLOSE_PAREN_T, OPEN_BRACE_T};
 
@@ -104,7 +105,7 @@ int buildFunction(const struct Node *root, const struct Token **tokens, long *po
     return 0;
 }
 
-int buildBody(const struct Node *root, const struct Token **tokens, long *pos)
+int buildBody(struct Node *root, struct Token **tokens, long *pos)
 {
     if (testRule(root, tokens, pos, RETURN))
     {
@@ -114,7 +115,7 @@ int buildBody(const struct Node *root, const struct Token **tokens, long *pos)
     return 0;
 }
 
-int buildReturn(const struct Node *root, const struct Token **tokens, long *pos)
+int buildReturn(struct Node *root, struct Token **tokens, long *pos)
 {
     if (testToken(tokens, pos, RETURN_KEYWORD_T))
     {
@@ -135,7 +136,7 @@ int buildReturn(const struct Node *root, const struct Token **tokens, long *pos)
     return 0;
 }
 
-int buildIntLiteral(const struct Node *root, const struct Token **tokens, long *pos)
+int buildIntLiteral(struct Node *root, struct Token **tokens, long *pos)
 {
     if (testToken(tokens, pos, INT_LITERAL_T))
     {
@@ -145,7 +146,7 @@ int buildIntLiteral(const struct Node *root, const struct Token **tokens, long *
     return 0;
 }
 
-const struct Ast *parse(const struct Token **tokens)
+struct Ast *parse(struct Token **tokens)
 {
     struct Ast *ast = malloc(sizeof(struct Ast));
 

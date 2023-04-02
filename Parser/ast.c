@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-const struct Node *nodeFactory(const enum NodeType nodeType)
+struct Node *nodeFactory(const enum NodeType nodeType)
 {
     struct Node *ret = malloc(sizeof(struct Node));
     ret->nodeType = nodeType;
@@ -53,7 +53,7 @@ void printNode(const struct Node *node, const long indent)
     }
 }
 
-void addChild(struct Node *node, const struct Node *node_to_add)
+void addChild(struct Node *node, struct Node *node_to_add)
 {
 
     if (node->number_of_children == 0)
@@ -68,7 +68,7 @@ void addChild(struct Node *node, const struct Node *node_to_add)
     node->children[node->number_of_children - 1] = node_to_add;
 }
 
-void freeNode(const struct Node *node)
+void freeNode(struct Node *node)
 {
     for (int i = 0; i < node->number_of_children; i++)
     {
@@ -83,7 +83,7 @@ void printAst(const struct Ast *ast)
     printNode(ast->program, 0);
 }
 
-void freeAst(const struct Ast *ast)
+void freeAst(struct Ast *ast)
 {
     freeNode(ast->program);
 }

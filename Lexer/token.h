@@ -28,16 +28,16 @@ struct Token
     struct ArbitraryValue *value;
 };
 
-const struct Token *tokenFactory(const enum TokenType token_type, const struct Pos *pos, const struct ArbitraryValue *arbitrary_value);
+struct Token *tokenFactory(const enum TokenType token_type, struct Pos *pos, struct ArbitraryValue *arbitrary_value);
 
 const char *tokenToString(const struct Token *token);
 
 void printToken(const struct Token *token);
 
-void printTokenArray(const struct Token **tokens);
+void printTokenArray(struct Token **tokens);
 
-void freeToken(const struct Token *token);
+void freeToken(struct Token *token);
 
-void freeTokens(const struct Token **tokens);
+void freeTokens(struct Token **tokens);
 
 #endif

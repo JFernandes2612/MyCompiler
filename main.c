@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "Utils/utils.h"
 #include "Lexer/lexer.h"
 #include "Parser/parser.h"
@@ -17,7 +18,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    const char *input;
+    char *input;
 
     if ((input = readFile(argv[1])) == NULL)
     {
@@ -27,7 +28,7 @@ int main(int argc, char *argv[])
 
     printf("Input file:\n%s\n\n", input);
 
-    const struct Token **tokens;
+    struct Token **tokens;
 
     if ((tokens = lex(input)) == NULL)
     {

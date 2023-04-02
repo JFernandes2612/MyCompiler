@@ -3,7 +3,7 @@
 
 #define BUFF_SIZE 1028
 
-const char *readFile(const char *path);
+char *readFile(const char *path);
 
 struct Pos
 {
@@ -11,9 +11,9 @@ struct Pos
     long column;
 };
 
-const struct Pos *posFactory(const long line, const long column);
+struct Pos *posFactory(const long line, const long column);
 
-const struct Pos *posCopy(const struct Pos *pos);
+struct Pos *posCopy(const struct Pos *pos);
 
 void posAddLine(struct Pos *pos, const long line);
 
@@ -23,7 +23,7 @@ void posNewLine(struct Pos *pos);
 
 const char *posToString(const struct Pos *pos);
 
-void forward(long* pos_l, struct Pos *pos_p, const long n);
+void forward(long *pos_l, struct Pos *pos_p, const long n);
 
 enum Type
 {
@@ -37,7 +37,7 @@ struct ArbitraryValue
     void *value;
 };
 
-const struct ArbitraryValue *arbitraryValueFactory(const enum Type type, const void *value);
+struct ArbitraryValue *arbitraryValueFactory(const enum Type type, void *value);
 
 const char *arbitraryValueToString(const struct ArbitraryValue *arbitrary_value);
 

@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <string.h>
 
-const struct Token *lexTokenStateMachineDigit(const char *input, long *input_string_pos, struct Pos *screen_pos)
+struct Token *lexTokenStateMachineDigit(const char *input, long *input_string_pos, struct Pos *screen_pos)
 {
     struct Token *token = tokenFactory(INT_LITERAL_T, posCopy(screen_pos), NULL);
     char c = input[*input_string_pos];
@@ -12,7 +12,7 @@ const struct Token *lexTokenStateMachineDigit(const char *input, long *input_str
     (*value) = 0;
     long mult = 1;
 
-    const struct Pos* init_pos = posCopy(screen_pos);
+    const struct Pos *init_pos = posCopy(screen_pos);
 
     while (isdigit(c))
     {
@@ -28,7 +28,7 @@ const struct Token *lexTokenStateMachineDigit(const char *input, long *input_str
     return token;
 }
 
-const struct Token *lexTokenStateMachineAlphaKeyword(const char *input, long *input_string_pos, struct Pos *screen_pos, const char *target_word, const enum TokenType token_type, char *value, long *counter)
+struct Token *lexTokenStateMachineAlphaKeyword(const char *input, long *input_string_pos, struct Pos *screen_pos, const char *target_word, const enum TokenType token_type, char *value, long *counter)
 {
     struct Token *token = tokenFactory(IDENTIFIER_T, posCopy(screen_pos), NULL);
 
@@ -50,17 +50,17 @@ const struct Token *lexTokenStateMachineAlphaKeyword(const char *input, long *in
     return token;
 }
 
-const struct Token *lexTokenStateMachineAlphaIntKeyword(const char *input, long *input_string_pos, struct Pos *screen_pos, char *value, long *counter)
+struct Token *lexTokenStateMachineAlphaIntKeyword(const char *input, long *input_string_pos, struct Pos *screen_pos, char *value, long *counter)
 {
     return lexTokenStateMachineAlphaKeyword(input, input_string_pos, screen_pos, "int", INT_KEYWORD_T, value, counter);
 }
 
-const struct Token *lexTokenStateMachineAlphaReturnKeyword(const char *input, long *input_string_pos, struct Pos *screen_pos, char *value, long *counter)
+struct Token *lexTokenStateMachineAlphaReturnKeyword(const char *input, long *input_string_pos, struct Pos *screen_pos, char *value, long *counter)
 {
     return lexTokenStateMachineAlphaKeyword(input, input_string_pos, screen_pos, "return", RETURN_KEYWORD_T, value, counter);
 }
 
-const struct Token *lexTokenStateMachineAlpha(const char *input, long *input_string_pos, struct Pos *screen_pos)
+struct Token *lexTokenStateMachineAlpha(const char *input, long *input_string_pos, struct Pos *screen_pos)
 {
     struct Token *token = tokenFactory(IDENTIFIER_T, posCopy(screen_pos), NULL);
     char *value = malloc(BUFF_SIZE);
@@ -109,7 +109,7 @@ const struct Token *lexTokenStateMachineAlpha(const char *input, long *input_str
     return token;
 }
 
-const struct Token *lexTokenStateMachine(const char *input, long *input_string_pos, struct Pos *screen_pos)
+struct Token *lexTokenStateMachine(const char *input, long *input_string_pos, struct Pos *screen_pos)
 {
     struct Token *token = tokenFactory(ERROR_T, posCopy(screen_pos), NULL);
 
@@ -117,11 +117,11 @@ const struct Token *lexTokenStateMachine(const char *input, long *input_string_p
 
     while (c == ' ' || c == '\n' || c == '\t')
     {
-        if (c == '\n') 
+        if (c == '\n')
         {
             (*input_string_pos)++;
             posNewLine(screen_pos);
-        } 
+        }
         else
         {
             forward(input_string_pos, screen_pos, 1);
@@ -175,7 +175,7 @@ const struct Token *lexTokenStateMachine(const char *input, long *input_string_p
     return token;
 }
 
-const struct Token **lex(const char *input)
+struct Token **lex(const char *input)
 {
     struct Token **tokens;
     if ((tokens = malloc(sizeof(struct Token *) * TOKENS_MAX_SIZE)) == NULL)
@@ -186,7 +186,7 @@ const struct Token **lex(const char *input)
 
     long current_token = 0;
     long input_string_pos = 0;
-    struct Pos* screen_pos = posFactory(1, 1);
+    struct Pos *screen_pos = posFactory(1, 1);
 
     while (1)
     {
@@ -200,7 +200,7 @@ const struct Token **lex(const char *input)
 
         if (token->token_type == ERROR_T)
         {
-            printf("Unexpected token '%c' at %s\n", input[input_string_pos-1], posToString(screen_pos));
+            printf("Unexpected token '%c' at %s\n", input[input_string_pos - 1], posToString(screen_pos));
             free(screen_pos);
             return NULL;
         }
