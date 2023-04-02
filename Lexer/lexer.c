@@ -4,87 +4,90 @@
 #include <ctype.h>
 #include <string.h>
 
-const struct Token *lexTokenStateMachineDigit(const char *input, long *pos)
+const struct Token *lexTokenStateMachineDigit(const char *input, long *input_string_pos, struct Pos *screen_pos)
 {
-    char c = input[*pos];
+    struct Token *token = tokenFactory(INT_LITERAL_T, posCopy(screen_pos), NULL);
+    char c = input[*input_string_pos];
     int *value = malloc(sizeof(int));
     (*value) = 0;
     long mult = 1;
+
+    const struct Pos* init_pos = posCopy(screen_pos);
 
     while (isdigit(c))
     {
         (*value) += (int)(c - 48) * mult;
         mult *= 10;
 
-        (*pos)++;
-        c = input[*pos];
+        forward(input_string_pos, screen_pos, 1);
+        c = input[*input_string_pos];
     }
 
-    return tokenFactory(INT_LITERAL_T, arbitraryValueFactory(INT, value));
+    token->value = arbitraryValueFactory(INT, value);
+
+    return token;
 }
 
-const struct Token *lexTokenStateMachineAlphaKeyword(const char *input, long *pos, const char *target_word, const enum TokenType token_type, char *value, long *counter)
+const struct Token *lexTokenStateMachineAlphaKeyword(const char *input, long *input_string_pos, struct Pos *screen_pos, const char *target_word, const enum TokenType token_type, char *value, long *counter)
 {
-    struct Token *token = tokenFactory(IDENTIFIER_T, NULL);
+    struct Token *token = tokenFactory(IDENTIFIER_T, posCopy(screen_pos), NULL);
 
     long target_word_length = strlen(target_word);
     strcpy(value, target_word);
     (*counter) = target_word_length;
 
     char comparation_input[TOKEN_MAX_SIZE];
-    strncpy(comparation_input, input + (*pos), target_word_length);
+    strncpy(comparation_input, input + (*input_string_pos), target_word_length);
     comparation_input[target_word_length] = '\0';
 
     if (strcmp(comparation_input, target_word) == 0)
     {
         freeToken(token);
-        token = tokenFactory(token_type, NULL);
-        (*pos) += target_word_length;
+        token = tokenFactory(token_type, posCopy(screen_pos), NULL);
+        forward(input_string_pos, screen_pos, target_word_length);
     }
 
     return token;
 }
 
-const struct Token *lexTokenStateMachineAlphaIntKeyword(const char *input, long *pos, char *value, long *counter)
+const struct Token *lexTokenStateMachineAlphaIntKeyword(const char *input, long *input_string_pos, struct Pos *screen_pos, char *value, long *counter)
 {
-    return lexTokenStateMachineAlphaKeyword(input, pos, "int", INT_KEYWORD_T, value, counter);
+    return lexTokenStateMachineAlphaKeyword(input, input_string_pos, screen_pos, "int", INT_KEYWORD_T, value, counter);
 }
 
-const struct Token *lexTokenStateMachineAlphaReturnKeyword(const char *input, long *pos, char *value, long *counter)
+const struct Token *lexTokenStateMachineAlphaReturnKeyword(const char *input, long *input_string_pos, struct Pos *screen_pos, char *value, long *counter)
 {
-    return lexTokenStateMachineAlphaKeyword(input, pos, "return", RETURN_KEYWORD_T, value, counter);
+    return lexTokenStateMachineAlphaKeyword(input, input_string_pos, screen_pos, "return", RETURN_KEYWORD_T, value, counter);
 }
 
-const struct Token *lexTokenStateMachineAlpha(const char *input, long *pos)
+const struct Token *lexTokenStateMachineAlpha(const char *input, long *input_string_pos, struct Pos *screen_pos)
 {
-    struct Token *token = tokenFactory(IDENTIFIER_T, NULL);
+    struct Token *token = tokenFactory(IDENTIFIER_T, posCopy(screen_pos), NULL);
     char *value = malloc(BUFF_SIZE);
     long counter = 0;
 
-    char c = input[*pos];
+    char c = input[*input_string_pos];
     int may_be_keyword = 1;
 
-    int initPos = *pos;
-
-    while (isalpha(c) || isdigit(c) || c == "_")
+    while (isalpha(c) || isdigit(c) || c == '_')
     {
         value[counter] = c;
         if (may_be_keyword)
         {
             may_be_keyword = 0;
-            struct Token *new_token = tokenFactory(IDENTIFIER_T, NULL);
+            struct Token *new_token = tokenFactory(IDENTIFIER_T, posCopy(screen_pos), NULL);
             if (c == 'i')
             {
-                new_token = lexTokenStateMachineAlphaIntKeyword(input, pos, value, &counter);
+                new_token = lexTokenStateMachineAlphaIntKeyword(input, input_string_pos, screen_pos, value, &counter);
             }
             else if (c == 'r')
             {
-                new_token = lexTokenStateMachineAlphaReturnKeyword(input, pos, value, &counter);
+                new_token = lexTokenStateMachineAlphaReturnKeyword(input, input_string_pos, screen_pos, value, &counter);
             }
 
-            c = input[*pos];
+            c = input[*input_string_pos];
 
-            if (new_token->token_type != IDENTIFIER_T && !isalpha(c) && !isdigit(c) && c != "_")
+            if (new_token->token_type != IDENTIFIER_T && !isalpha(c) && !isdigit(c) && c != '_')
             {
                 free(value);
                 freeToken(token);
@@ -95,42 +98,52 @@ const struct Token *lexTokenStateMachineAlpha(const char *input, long *pos)
         }
 
         counter++;
-        (*pos)++;
-        c = input[*pos];
+        forward(input_string_pos, screen_pos, 1);
+        c = input[*input_string_pos];
     }
 
     value[counter] = '\0';
+    value = realloc(value, strlen(value) + 1);
     token->value = arbitraryValueFactory(STRING, value);
 
     return token;
 }
 
-const struct Token *lexTokenStateMachine(const char *input, long *pos)
+const struct Token *lexTokenStateMachine(const char *input, long *input_string_pos, struct Pos *screen_pos)
 {
-    struct Token *token = tokenFactory(ERROR_T, NULL);
+    struct Token *token = tokenFactory(ERROR_T, posCopy(screen_pos), NULL);
 
-    char c = input[*pos];
+    char c = input[*input_string_pos];
 
-    while (c == ' ' || c == '\n' || c == "\t")
+    while (c == ' ' || c == '\n' || c == '\t')
     {
-        (*pos)++;
-        c = input[*pos];
+        if (c == '\n') 
+        {
+            (*input_string_pos)++;
+            posNewLine(screen_pos);
+        } 
+        else
+        {
+            forward(input_string_pos, screen_pos, 1);
+        }
+
+        c = input[*input_string_pos];
     }
 
     if (isdigit(c))
     {
-        token = lexTokenStateMachineDigit(input, pos);
+        token = lexTokenStateMachineDigit(input, input_string_pos, screen_pos);
 
         // Invalidate identifiers that start with a number
-        if (isalpha(input[*pos]))
+        if (isalpha(input[*input_string_pos]))
         {
             freeToken(token);
-            token = tokenFactory(ERROR_T, NULL);
+            token = tokenFactory(ERROR_T, posCopy(screen_pos), NULL);
         }
     }
     else if (isalpha(c))
     {
-        token = lexTokenStateMachineAlpha(input, pos);
+        token = lexTokenStateMachineAlpha(input, input_string_pos, screen_pos);
     }
     else
     {
@@ -138,25 +151,25 @@ const struct Token *lexTokenStateMachine(const char *input, long *pos)
         switch (c)
         {
         case '(':
-            token = tokenFactory(OPEN_PAREN_T, NULL);
+            token = tokenFactory(OPEN_PAREN_T, posCopy(screen_pos), NULL);
             break;
         case ')':
-            token = tokenFactory(CLOSE_PAREN_T, NULL);
+            token = tokenFactory(CLOSE_PAREN_T, posCopy(screen_pos), NULL);
             break;
         case '{':
-            token = tokenFactory(OPEN_BRACE_T, NULL);
+            token = tokenFactory(OPEN_BRACE_T, posCopy(screen_pos), NULL);
             break;
         case '}':
-            token = tokenFactory(CLOSE_BRACE_T, NULL);
+            token = tokenFactory(CLOSE_BRACE_T, posCopy(screen_pos), NULL);
             break;
         case ';':
-            token = tokenFactory(SEMICOLON_T, NULL);
+            token = tokenFactory(SEMICOLON_T, posCopy(screen_pos), NULL);
             break;
         case '\0':
-            token = tokenFactory(EOF_T, NULL);
+            token = tokenFactory(EOF_T, posCopy(screen_pos), NULL);
             break;
         }
-        (*pos)++;
+        forward(input_string_pos, screen_pos, 1);
     }
 
     return token;
@@ -164,19 +177,20 @@ const struct Token *lexTokenStateMachine(const char *input, long *pos)
 
 const struct Token **lex(const char *input)
 {
-    long input_pos = 0;
-
     struct Token **tokens;
     if ((tokens = malloc(sizeof(struct Token *) * TOKENS_MAX_SIZE)) == NULL)
     {
         printf("Error unable to malloc memory of array of tokens");
         return NULL;
     }
+
     long current_token = 0;
+    long input_string_pos = 0;
+    struct Pos* screen_pos = posFactory(1, 1);
 
     while (1)
     {
-        struct Token *token = lexTokenStateMachine(input, &input_pos);
+        struct Token *token = lexTokenStateMachine(input, &input_string_pos, screen_pos);
         tokens[current_token] = token;
 
         if (token->token_type == EOF_T)
@@ -186,7 +200,9 @@ const struct Token **lex(const char *input)
 
         if (token->token_type == ERROR_T)
         {
-            printf("Error parsing tokenizing input\n");
+            posAddColumn(screen_pos, -1);
+            printf("Unknown token '%c' at %s\n", input[input_string_pos-1], posToString(screen_pos));
+            free(screen_pos);
             return NULL;
         }
 
@@ -195,9 +211,12 @@ const struct Token **lex(const char *input)
 
     if ((tokens = realloc(tokens, sizeof(struct Token *) * (current_token + 1))) == NULL)
     {
+        free(screen_pos);
         printf("Error unable to realloc memory of array of tokens");
         return NULL;
     }
+
+    free(screen_pos);
 
     return tokens;
 }

@@ -24,10 +24,11 @@ enum TokenType
 struct Token
 {
     enum TokenType token_type;
+    struct Pos *pos;
     struct ArbitraryValue *value;
 };
 
-const struct Token *tokenFactory(const enum TokenType token_type, const struct ArbitraryValue *arbitrary_value);
+const struct Token *tokenFactory(const enum TokenType token_type, const struct Pos *pos, const struct ArbitraryValue *arbitrary_value);
 
 const char *tokenToString(const struct Token *token);
 

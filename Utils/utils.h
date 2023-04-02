@@ -5,6 +5,26 @@
 
 const char *readFile(const char *path);
 
+struct Pos
+{
+    long line;
+    long column;
+};
+
+const struct Pos *posFactory(const long line, const long column);
+
+const struct Pos *posCopy(const struct Pos *pos);
+
+void posAddLine(struct Pos *pos, const long line);
+
+void posAddColumn(struct Pos *pos, const long column);
+
+void posNewLine(struct Pos *pos);
+
+const char *posToString(const struct Pos *pos);
+
+void forward(long* pos_l, struct Pos *pos_p, const long n);
+
 enum Type
 {
     INT,

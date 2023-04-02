@@ -17,6 +17,7 @@ struct Node
 
     long number_of_children;
     struct Node **children;
+    struct StringKeyArbitraryValueMap* data;
 };
 
 const struct Node *nodeFactory(const enum NodeType nodeType);

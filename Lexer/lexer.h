@@ -7,17 +7,17 @@
 
 #define TOKEN_MAX_SIZE 128
 
-const struct Token *lexTokenStateMachineDigit(const char *input, long *pos);
+const struct Token *lexTokenStateMachineDigit(const char *input, long *input_string_pos, struct Pos *screen_pos);
 
-const struct Token *lexTokenStateMachineAlphaKeyword(const char *input, long *pos, const char *target_word, const enum TokenType token_type, char *value, long *counter);
+const struct Token *lexTokenStateMachineAlphaKeyword(const char *input, long *input_string_pos, struct Pos *screen_pos, const char *target_word, const enum TokenType token_type, char *value, long *counter);
 
-const struct Token *lexTokenStateMachineAlphaIntKeyword(const char *input, long *pos, char *value, long *counter);
+const struct Token *lexTokenStateMachineAlphaIntKeyword(const char *input, long *input_string_pos, struct Pos *screen_pos, char *value, long *counter);
 
-const struct Token *lexTokenStateMachineAlphaReturnKeyword(const char *input, long *pos, char *value, long *counter);
+const struct Token *lexTokenStateMachineAlphaReturnKeyword(const char *input, long *input_string_pos, struct Pos *screen_pos, char *value, long *counter);
 
-const struct Token *lexTokenStateMachineAlpha(const char *input, long *pos);
+const struct Token *lexTokenStateMachineAlpha(const char *input, long *input_string_pos, struct Pos *screen_pos);
 
-const struct Token *lexTokenStateMachine(const char *input, long *pos);
+const struct Token *lexTokenStateMachine(const char *input, long *input_string_pos, struct Pos *screen_pos);
 
 const struct Token **lex(const char *input);
 

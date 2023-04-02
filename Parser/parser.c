@@ -19,7 +19,7 @@ int testToken(const struct Token **tokens, long *pos, const enum TokenType token
 
     if (token->token_type != token_type)
     {
-        printf("Expected '%s' found '%s'\n", tokenToString(tokenFactory(token_type, NULL)), tokenToString(token));
+        printf("Expected '%s' found '%s'\n", tokenToString(tokenFactory(token_type, NULL, NULL)), tokenToString(token));
         return -1;
     }
 

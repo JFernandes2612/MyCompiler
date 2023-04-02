@@ -48,6 +48,55 @@ const char *readFile(const char *path)
     return ret;
 }
 
+const struct Pos *posFactory(const long line, const long column)
+{
+    struct Pos *ret = malloc(sizeof(struct Pos));
+    ret->line = line;
+    ret->column = column;
+    return ret;
+}
+
+const struct Pos *posCopy(const struct Pos *pos)
+{
+    struct Pos *ret = malloc(sizeof(struct Pos));
+    ret->line = pos->line;
+    ret->column = pos->column;
+    return ret;
+}
+
+void posAddLine(struct Pos *pos, const long line)
+{
+    pos->line += line;
+}
+
+void posAddColumn(struct Pos *pos, const long column)
+{
+    pos->column += column;
+}
+
+void posNewLine(struct Pos *pos)
+{
+    posAddLine(pos, 1);
+    pos->column = 1;
+}
+
+const char *posToString(const struct Pos *pos)
+{
+    char *buff = malloc(BUFF_SIZE);
+
+    sprintf(buff, "[line: %d, column: %d]", pos->line, pos->column);
+    
+    buff = realloc(buff, strlen(buff) + 1);
+
+    return buff;
+}
+
+void forward(long *pos_l, struct Pos *pos_p, const long n)
+{
+    posAddColumn(pos_p, n);
+    (*pos_l) += n;
+}
+
 const struct ArbitraryValue *arbitraryValueFactory(const enum Type type, const void *value)
 {
     struct ArbitraryValue *ret = malloc(sizeof(struct ArbitraryValue));
@@ -64,9 +113,11 @@ const char *arbitraryValueToString(const struct ArbitraryValue *arbitrary_value)
     {
     case INT:
         itoa(*((int *)arbitrary_value->value), buff, 10);
+        buff = realloc(buff, strlen(buff));
         return buff;
         break;
     case STRING:
+        free(buff);
         return (char *)arbitrary_value->value;
         break;
     default:
