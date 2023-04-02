@@ -200,8 +200,7 @@ const struct Token **lex(const char *input)
 
         if (token->token_type == ERROR_T)
         {
-            posAddColumn(screen_pos, -1);
-            printf("Unknown token '%c' at %s\n", input[input_string_pos-1], posToString(screen_pos));
+            printf("Unexpected token '%c' at %s\n", input[input_string_pos-1], posToString(screen_pos));
             free(screen_pos);
             return NULL;
         }
