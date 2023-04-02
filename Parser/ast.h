@@ -1,6 +1,9 @@
 #ifndef AST_H
 #define AST_H
 
+#include "../Utils/utils.h"
+#include "../Lexer/token.h"
+
 enum NodeType
 {
     PROGRAM,
@@ -14,15 +17,22 @@ enum NodeType
 struct Node
 {
     enum NodeType nodeType;
+    struct Pos *pos;
 
     long number_of_children;
     struct Node **children;
     struct StringKeyArbitraryValueMap *data;
 };
 
-struct Node *nodeFactory(const enum NodeType nodeType);
+struct Node *nodeFactory(const enum NodeType nodeType, struct Pos *pos);
 
-void addChild(struct Node *node, struct Node *node_to_add);
+void nodeAddChild(struct Node *node, struct Node *node_to_add);
+
+void nodePut(struct Node *node, struct StringKeyArbitraryValueMapEntry* value);
+
+void nodePutPreviousToken(struct Node *node, struct Token **tokens, long *pos, char* key);
+
+struct ArbitraryValue* nodeGet(struct Node *node, const char* key);
 
 const char *nodeToString(const struct Node *node);
 

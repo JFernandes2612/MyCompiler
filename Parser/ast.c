@@ -1,40 +1,56 @@
 #include "ast.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
-struct Node *nodeFactory(const enum NodeType nodeType)
+struct Node *nodeFactory(const enum NodeType nodeType, struct Pos *pos)
 {
     struct Node *ret = malloc(sizeof(struct Node));
     ret->nodeType = nodeType;
+    ret->pos = pos;
     ret->number_of_children = 0;
     ret->children = NULL;
+    ret->data = stringKeyArbitraryValueMapFactory();
 
     return ret;
 }
 
 const char *nodeToString(const struct Node *node)
 {
+    char *node_string = malloc(BUFF_SIZE);
+
     switch (node->nodeType)
     {
     case PROGRAM:
-        return "PROGRAM";
+        strcpy(node_string, "PROGRAM");
         break;
     case FUNCTION:
-        return "FUNCTION";
+        strcpy(node_string, "FUNCTION");
         break;
     case BODY:
-        return "BODY";
+        strcpy(node_string, "BODY");
         break;
     case RETURN:
-        return "RETURN";
+        strcpy(node_string, "RETURN");
         break;
-
     case INT_LITERAL:
-        return "INT_LITERAL";
+        strcpy(node_string, "INT_LITERAL");
         break;
+    default:
+        return "";
     }
 
-    return "";
+    if (node->pos != NULL)
+    {
+        sprintf(node_string, "%s %s", node_string, posToString(node->pos));
+    }
+
+    if (node->data->number_of_entries != 0)
+    {
+        sprintf(node_string, "%s %s", node_string, stringKeyArbitraryValueMapToString(node->data));
+    }
+
+    return node_string;
 }
 
 void printNode(const struct Node *node, const long indent)
@@ -53,7 +69,7 @@ void printNode(const struct Node *node, const long indent)
     }
 }
 
-void addChild(struct Node *node, struct Node *node_to_add)
+void nodeAddChild(struct Node *node, struct Node *node_to_add)
 {
 
     if (node->number_of_children == 0)
@@ -66,6 +82,21 @@ void addChild(struct Node *node, struct Node *node_to_add)
     }
     node->number_of_children++;
     node->children[node->number_of_children - 1] = node_to_add;
+}
+
+void nodePut(struct Node *node, struct StringKeyArbitraryValueMapEntry* value)
+{
+    stringKeyArbitraryValueMapAddItem(node->data, value);
+}
+
+void nodePutPreviousToken(struct Node *node, struct Token **tokens, long *pos, char* key)
+{
+    nodePut(node, stringKeyArbitraryValueMapEntryFactory(key, tokens[(*pos) - 1]->value));
+}
+
+struct ArbitraryValue* nodeGet(struct Node *node, const char* key)
+{
+    return stringKeyArbitraryValueMapGetItem(node->data, key);
 }
 
 void freeNode(struct Node *node)

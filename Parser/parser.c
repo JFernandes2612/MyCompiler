@@ -4,12 +4,12 @@
 
 int testRule(struct Node *root, struct Token **tokens, long *pos, const enum NodeType node_type)
 {
-    struct Node *functionNode = nodeFactory(node_type);
+    struct Node *functionNode = nodeFactory(node_type, tokens[*pos]->pos);
     if (buildRule(functionNode, tokens, pos))
     {
         return -1;
     }
-    addChild(root, functionNode);
+    nodeAddChild(root, functionNode);
 
     return 0;
 }
@@ -85,9 +85,18 @@ int buildProgram(struct Node *root, struct Token **tokens, long *pos)
 
 int buildFunction(struct Node *root, struct Token **tokens, long *pos)
 {
-    const enum TokenType token_to_test[5] = {INT_KEYWORD_T, IDENTIFIER_T, OPEN_PAREN_T, CLOSE_PAREN_T, OPEN_BRACE_T};
+    const enum TokenType tokens_to_test_1[2] = {INT_KEYWORD_T, IDENTIFIER_T};
 
-    if (testTokens(tokens, pos, token_to_test, 5))
+    if (testTokens(tokens, pos, tokens_to_test_1, 2))
+    {
+        return -1;
+    }
+
+    nodePutPreviousToken(root, tokens, pos, "funcName");
+
+    const enum TokenType tokens_to_test_2[3] = {OPEN_PAREN_T, CLOSE_PAREN_T, OPEN_BRACE_T};
+
+    if (testTokens(tokens, pos, tokens_to_test_2, 3))
     {
         return -1;
     }
@@ -143,6 +152,8 @@ int buildIntLiteral(struct Node *root, struct Token **tokens, long *pos)
         return -1;
     }
 
+    nodePutPreviousToken(root, tokens, pos, "value");
+
     return 0;
 }
 
@@ -151,7 +162,7 @@ struct Ast *parse(struct Token **tokens)
     struct Ast *ast = malloc(sizeof(struct Ast));
 
     long pos = 0;
-    ast->program = nodeFactory(PROGRAM);
+    ast->program = nodeFactory(PROGRAM, tokens[0]->pos);
 
     if (buildRule(ast->program, tokens, &pos))
     {

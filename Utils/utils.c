@@ -126,3 +126,76 @@ const char *arbitraryValueToString(const struct ArbitraryValue *arbitrary_value)
 
     return "";
 }
+
+struct StringKeyArbitraryValueMapEntry* stringKeyArbitraryValueMapEntryFactory(char *key, struct ArbitraryValue *value)
+{
+    struct StringKeyArbitraryValueMapEntry* ret = malloc(sizeof(struct StringKeyArbitraryValueMapEntry));
+    ret->key = key;
+    ret->value = value;
+    return ret;
+}
+
+const char *stringKeyArbitraryValueMapEntryToString(const struct StringKeyArbitraryValueMapEntry* entry)
+{
+    char* buff = malloc(BUFF_SIZE);
+
+    sprintf(buff, "%s: %s", entry->key, arbitraryValueToString(entry->value));
+
+    return buff;
+}
+
+struct StringKeyArbitraryValueMap* stringKeyArbitraryValueMapFactory()
+{
+    struct StringKeyArbitraryValueMap* ret = malloc(sizeof(struct StringKeyArbitraryValueMap));
+    ret->entries = NULL;
+    ret->number_of_entries = 0;
+}
+
+void stringKeyArbitraryValueMapAddItem(struct StringKeyArbitraryValueMap* map, struct StringKeyArbitraryValueMapEntry* entry)
+{
+    map->number_of_entries++;
+    if (map->entries == NULL)
+    {
+        map->entries = malloc(sizeof(struct StringKeyArbitraryValueMapEntry*));
+    }
+    else
+    {
+        map->entries = realloc(map->entries, sizeof(struct StringKeyArbitraryValueMapEntry*) * map->number_of_entries);
+    }
+
+    map->entries[map->number_of_entries - 1] = entry;
+}
+
+struct ArbitraryValue* stringKeyArbitraryValueMapGetItem(struct StringKeyArbitraryValueMap* map, const char *key)
+{
+    for (long i = 0; i < map->number_of_entries; i++)
+    {
+        if (strcmp(map->entries[i]->key, key))
+        {
+            return map->entries[i]->value;
+        }
+    }
+
+    return NULL;
+}
+
+const char* stringKeyArbitraryValueMapToString(const struct StringKeyArbitraryValueMap* map)
+{
+    char* buff = malloc(BUFF_SIZE);
+
+    strcpy(buff, "{");
+
+    for (long i = 0; i < map->number_of_entries; i++)
+    {
+        sprintf(buff, "%s %s", buff, stringKeyArbitraryValueMapEntryToString(map->entries[i]));
+
+        if (i + 1 != map->number_of_entries)
+        {
+            strcat(buff, " ,");
+        }
+    }
+
+    strcat(buff, " }");
+
+    return buff;
+}
