@@ -3,6 +3,7 @@
 #include "Utils/utils.h"
 #include "Lexer/lexer.h"
 #include "Parser/parser.h"
+#include "CodeGeneration/visitor.h"
 
 void printUsage(const char *ex)
 {
@@ -50,6 +51,14 @@ int main(int argc, char *argv[])
     printf("AST:\n");
     printAst(ast);
 
+
+    char* assemblyCode;
+    assemblyCode = codeGeneration(ast);
+
+    printf("Assembly Code:\n%s", assemblyCode);
+
+
+    free(assemblyCode);
     freeAst(ast);
     freeTokens(tokens);
     free(input);

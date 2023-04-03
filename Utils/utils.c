@@ -177,7 +177,7 @@ struct ArbitraryValue* stringKeyArbitraryValueMapGetItem(struct StringKeyArbitra
 {
     for (long i = 0; i < map->number_of_entries; i++)
     {
-        if (strcmp(map->entries[i]->key, key))
+        if (strcmp(map->entries[i]->key, key) == 0)
         {
             return map->entries[i]->value;
         }
