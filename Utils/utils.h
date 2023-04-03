@@ -5,6 +5,8 @@
 
 char *readFile(const char *path);
 
+void saveFile(const char *path, const char* dataToSave);
+
 struct Pos
 {
     long line;

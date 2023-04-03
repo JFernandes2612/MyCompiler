@@ -48,6 +48,20 @@ char *readFile(const char *path)
     return ret;
 }
 
+void saveFile(const char *path, const char* dataToSave)
+{
+    FILE *f;
+    if ((f = fopen(path, "w")) == NULL)
+    {
+        printf("Error opening file '%s'.\n", path);
+        return;
+    }
+
+    fputs(dataToSave, f);
+
+    fclose(f);
+}
+
 struct Pos *posFactory(const long line, const long column)
 {
     struct Pos *ret = malloc(sizeof(struct Pos));

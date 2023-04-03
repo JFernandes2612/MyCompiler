@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include "Utils/utils.h"
 #include "Lexer/lexer.h"
 #include "Parser/parser.h"
@@ -57,6 +58,9 @@ int main(int argc, char *argv[])
 
     printf("Assembly Code:\n%s", assemblyCode);
 
+    saveFile(".\\input.s", assemblyCode);
+
+    execlp("gcc", "gcc .\\input.s", "-o input.exe", NULL);
 
     free(assemblyCode);
     freeAst(ast);
