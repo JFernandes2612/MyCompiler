@@ -51,6 +51,8 @@ struct StringKeyArbitraryValueMapEntry* stringKeyArbitraryValueMapEntryFactory(c
 
 const char *stringKeyArbitraryValueMapEntryToString(const struct StringKeyArbitraryValueMapEntry* entry);
 
+void freeStringKeyArbitraryValueMapEntry(struct StringKeyArbitraryValueMapEntry* entry);
+
 struct StringKeyArbitraryValueMap
 {
     struct StringKeyArbitraryValueMapEntry **entries;
@@ -64,5 +66,7 @@ void stringKeyArbitraryValueMapAddItem(struct StringKeyArbitraryValueMap *map, s
 struct ArbitraryValue* stringKeyArbitraryValueMapGetItem(struct StringKeyArbitraryValueMap* map, const char *key);
 
 const char* stringKeyArbitraryValueMapToString(const struct StringKeyArbitraryValueMap* map);
+
+void freeStringKeyArbitraryValueMap(struct StringKeyArbitraryValueMap* map);
 
 #endif

@@ -144,6 +144,13 @@ const char *stringKeyArbitraryValueMapEntryToString(const struct StringKeyArbitr
     return buff;
 }
 
+void freeStringKeyArbitraryValueMapEntry(struct StringKeyArbitraryValueMapEntry* entry)
+{
+    // The 'key' is always a static string
+    // The 'value' should be freed from the Tokens since it inherits the value from there
+    free(entry);
+}
+
 struct StringKeyArbitraryValueMap* stringKeyArbitraryValueMapFactory()
 {
     struct StringKeyArbitraryValueMap* ret = malloc(sizeof(struct StringKeyArbitraryValueMap));
@@ -198,4 +205,14 @@ const char* stringKeyArbitraryValueMapToString(const struct StringKeyArbitraryVa
     strcat(buff, " }");
 
     return buff;
+}
+
+void freeStringKeyArbitraryValueMap(struct StringKeyArbitraryValueMap* map)
+{
+    for (long i = 0; i < map->number_of_entries; i++)
+    {
+        freeStringKeyArbitraryValueMapEntry(map->entries[i]);
+    }
+    free(map->entries);
+    free(map);
 }

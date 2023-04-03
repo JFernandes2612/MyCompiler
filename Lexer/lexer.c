@@ -12,8 +12,6 @@ struct Token *lexTokenStateMachineDigit(const char *input, long *input_string_po
     (*value) = 0;
     long mult = 1;
 
-    const struct Pos *init_pos = posCopy(screen_pos);
-
     while (isdigit(c))
     {
         (*value) += (int)(c - 48) * mult;

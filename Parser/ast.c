@@ -105,7 +105,9 @@ void freeNode(struct Node *node)
     {
         freeNode(node->children[i]);
     }
-
+    // 'pos' is inherited from the 1st token it represents, therefore it is freed there
+    free(node->children);
+    freeStringKeyArbitraryValueMap(node->data);
     free(node);
 }
 
