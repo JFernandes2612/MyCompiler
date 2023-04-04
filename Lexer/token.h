@@ -11,6 +11,7 @@ enum TokenType
     CLOSE_PAREN_T,
     SEMICOLON_T,
     MINUS_T,
+    NEG_T,
 
     INT_KEYWORD_T,
     RETURN_KEYWORD_T,

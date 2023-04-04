@@ -8,13 +8,11 @@ int voidRule(const enum NodeType node_type);
 
 int testRule(struct Node *root, struct Token **tokens, long *pos, const enum NodeType node_type);
 
-int testRules(struct Node *root, struct Token **tokens, long *pos, const enum NodeType *node_types, const long number_of_tests);
-
-int testIfToken(struct Token **tokens, long *pos, const enum TokenType token_type);
-
-int testToken(struct Token **tokens, long *pos, const enum TokenType token_type);
+int testToken(struct Token **tokens, long *pos, const enum TokenType token_type, const int error);
 
 int testTokens(struct Token **tokens, long *pos, const enum TokenType *token_types, const long number_of_tests);
+
+int testAnyTokens(struct Token **tokens, long *pos, const enum TokenType *token_types, const long number_of_tests);
 
 int buildRule(struct Node *root, struct Token **tokens, long *pos);
 

@@ -26,28 +26,13 @@ int testRule(struct Node *root, struct Token **tokens, long *pos, const enum Nod
     return 0;
 }
 
-int testRules(struct Node *root, struct Token **tokens, long *pos, const enum NodeType *node_types, const long number_of_tests)
-{
-    long init_pos = *pos;
-    for (long i = 0; i < number_of_tests; i++)
-    {
-        if (testRule(root, tokens, pos, node_types[i]))
-        {
-            (*pos) = init_pos;
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-int testToken(struct Token **tokens, long *pos, const enum TokenType token_type)
+int testToken(struct Token **tokens, long *pos, const enum TokenType token_type, const int error)
 {
     const struct Token *token = tokens[*pos];
 
     if (token->token_type != token_type)
     {
-        printf("Expected '%s' found '%s'\n", tokenToString(tokenFactory(token_type, NULL, NULL)), tokenToString(token));
+        if (error) printf("Expected '%s' found '%s'\n", tokenToString(tokenFactory(token_type, NULL, NULL)), tokenToString(token));
         return -1;
     }
 
@@ -56,31 +41,41 @@ int testToken(struct Token **tokens, long *pos, const enum TokenType token_type)
     return 0;
 }
 
-int testIfToken(struct Token **tokens, long *pos, const enum TokenType token_type)
+int testAnyRules(struct Node *root, struct Token **tokens, long *pos, const enum NodeType *node_types, const long number_of_tests)
 {
-    const struct Token *token = tokens[*pos];
+    int error = -1;
 
-    if (token->token_type != token_type)
+    for(long i = 0; i < number_of_tests && error; i++)
     {
-        return -1;
+        error &= testRule(root, tokens, pos, node_types[i]);
     }
 
-    (*pos)++;
-
-    return 0;
+    return error;
 }
 
 int testTokens(struct Token **tokens, long *pos, const enum TokenType *token_types, const long number_of_tests)
 {
     for (long i = 0; i < number_of_tests; i++)
     {
-        if (testToken(tokens, pos, token_types[i]))
+        if (testToken(tokens, pos, token_types[i], 1))
         {
             return -1;
         }
     }
 
     return 0;
+}
+
+int testAnyTokens(struct Token **tokens, long *pos, const enum TokenType *token_types, const long number_of_tests)
+{
+    int error = -1;
+
+    for(long i = 0; i < number_of_tests && error; i++)
+    {
+        error &= testToken(tokens, pos, token_types[i], 0);
+    }
+
+    return error;
 }
 
 int buildProgram(struct Node *root, struct Token **tokens, long *pos)
@@ -90,7 +85,7 @@ int buildProgram(struct Node *root, struct Token **tokens, long *pos)
         return -1;
     }
 
-    if (testToken(tokens, pos, EOF_T))
+    if (testToken(tokens, pos, EOF_T, 1))
     {
         return -1;
     }
@@ -121,7 +116,7 @@ int buildFunction(struct Node *root, struct Token **tokens, long *pos)
         return -1;
     }
 
-    if (testToken(tokens, pos, CLOSE_BRACE_T))
+    if (testToken(tokens, pos, CLOSE_BRACE_T, 1))
     {
         return -1;
     }
@@ -141,7 +136,7 @@ int buildBody(struct Node *root, struct Token **tokens, long *pos)
 
 int buildReturn(struct Node *root, struct Token **tokens, long *pos)
 {
-    if (testToken(tokens, pos, RETURN_KEYWORD_T))
+    if (testToken(tokens, pos, RETURN_KEYWORD_T, 1))
     {
         return -1;
     }
@@ -151,7 +146,7 @@ int buildReturn(struct Node *root, struct Token **tokens, long *pos)
         return -1;
     }
 
-    if (testToken(tokens, pos, SEMICOLON_T))
+    if (testToken(tokens, pos, SEMICOLON_T, 1))
     {
         return -1;
     }
@@ -161,7 +156,9 @@ int buildReturn(struct Node *root, struct Token **tokens, long *pos)
 
 int buildExpression(struct Node *root, struct Token **tokens, long *pos)
 {
-    if (testRule(root, tokens, pos, INT_LITERAL) && testRule(root, tokens, pos, UNARY_OP))
+    const enum NodeType nodes_to_test[2] = {INT_LITERAL, UNARY_OP};
+
+    if (testAnyRules(root, tokens, pos, nodes_to_test, 2))
     {
         return -1;
     }
@@ -171,7 +168,9 @@ int buildExpression(struct Node *root, struct Token **tokens, long *pos)
 
 int buildUnaryOp(struct Node *root, struct Token **tokens, long *pos)
 {
-    if (testToken(tokens, pos, MINUS_T))
+    const enum TokenType tokens_to_test[2] = {MINUS_T, NEG_T};
+
+    if (testAnyTokens(tokens, pos, tokens_to_test, 2))
     {
         return -1;
     }
@@ -188,7 +187,7 @@ int buildUnaryOp(struct Node *root, struct Token **tokens, long *pos)
 
 int buildIntLiteral(struct Node *root, struct Token **tokens, long *pos)
 {
-    if (testToken(tokens, pos, INT_LITERAL_T))
+    if (testToken(tokens, pos, INT_LITERAL_T, 1))
     {
         return -1;
     }
