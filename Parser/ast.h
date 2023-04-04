@@ -9,6 +9,8 @@ enum NodeType
     PROGRAM,
     FUNCTION,
     BODY,
+    EXPRESSION,
+    UNARY_OP,
     RETURN,
 
     INT_LITERAL,
@@ -28,11 +30,13 @@ struct Node *nodeFactory(const enum NodeType nodeType, struct Pos *pos);
 
 void nodeAddChild(struct Node *node, struct Node *node_to_add);
 
-void nodePut(struct Node *node, struct StringKeyArbitraryValueMapEntry* value);
+void nodeAddChildrenFromChild(struct Node *node, struct Node *node_children_to_add);
 
-void nodePutPreviousToken(struct Node *node, struct Token **tokens, long *pos, char* key);
+void nodePut(struct Node *node, struct StringKeyArbitraryValueMapEntry *value);
 
-struct ArbitraryValue* nodeGet(struct Node *node, const char* key);
+void nodePutPreviousToken(struct Node *node, struct Token **tokens, long *pos, char *key);
+
+struct ArbitraryValue *nodeGet(struct Node *node, const char *key);
 
 const char *nodeToString(const struct Node *node);
 

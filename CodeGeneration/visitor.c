@@ -3,12 +3,20 @@
 #include <stdio.h>
 #include <string.h>
 
-void codeGenerationVisitIntLiteral(struct Node* node, char* assemblyCode)
+void codeGenerationVisitIntLiteral(struct Node *node, char *assemblyCode)
 {
     sprintf(assemblyCode, "%s\tmovl $%s, %%eax\n", assemblyCode, arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "value")));
 }
 
-void codeGenerationVisitReturn(struct Node* node, char* assemblyCode)
+void codeGenerationVisitUnaryOp(struct Node *node, char *assemblyCode)
+{
+    codeGenerationVisit(node->children[0], assemblyCode);
+
+    if (strcmp(arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "op")), "-") == 0)
+        sprintf(assemblyCode, "%s\tneg %%eax\n", assemblyCode);
+}
+
+void codeGenerationVisitReturn(struct Node *node, char *assemblyCode)
 {
     // Visit child expression
     codeGenerationVisit(node->children[0], assemblyCode);
@@ -16,7 +24,7 @@ void codeGenerationVisitReturn(struct Node* node, char* assemblyCode)
     strcat(assemblyCode, "\tret\n");
 }
 
-void codeGenerationVisitFunction(struct Node* node, char* assemblyCode)
+void codeGenerationVisitFunction(struct Node *node, char *assemblyCode)
 {
     sprintf(assemblyCode, "%s%s:\n", assemblyCode, arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "funcName")));
 
@@ -24,7 +32,7 @@ void codeGenerationVisitFunction(struct Node* node, char* assemblyCode)
     codeGenerationVisit(node->children[0], assemblyCode);
 }
 
-void codeGenerationVisitProgram(struct Node* node, char* assemblyCode)
+void codeGenerationVisitProgram(struct Node *node, char *assemblyCode)
 {
     strcat(assemblyCode, "\t.globl main\n");
 
@@ -32,7 +40,7 @@ void codeGenerationVisitProgram(struct Node* node, char* assemblyCode)
     codeGenerationVisit(node->children[0], assemblyCode);
 }
 
-void codeGenerationVisitDown(struct Node* node, char* assemblyCode)
+void codeGenerationVisitDown(struct Node *node, char *assemblyCode)
 {
     if (node->number_of_children != 0)
     {
@@ -43,7 +51,7 @@ void codeGenerationVisitDown(struct Node* node, char* assemblyCode)
     }
 }
 
-void codeGenerationVisit(struct Node* node, char* assemblyCode)
+void codeGenerationVisit(struct Node *node, char *assemblyCode)
 {
     switch (node->nodeType)
     {
@@ -59,15 +67,18 @@ void codeGenerationVisit(struct Node* node, char* assemblyCode)
     case INT_LITERAL:
         codeGenerationVisitIntLiteral(node, assemblyCode);
         break;
+    case UNARY_OP:
+        codeGenerationVisitUnaryOp(node, assemblyCode);
+        break;
     default:
         codeGenerationVisitDown(node, assemblyCode);
         break;
     }
 }
 
-char* codeGeneration(struct Ast* ast)
+char *codeGeneration(struct Ast *ast)
 {
-    char* assemblyCode = malloc(BUFF_SIZE);
+    char *assemblyCode = malloc(BUFF_SIZE);
     strcpy(assemblyCode, "");
 
     codeGenerationVisit(ast->program, assemblyCode);

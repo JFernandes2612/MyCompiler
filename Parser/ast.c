@@ -36,6 +36,12 @@ const char *nodeToString(const struct Node *node)
     case INT_LITERAL:
         strcpy(node_string, "INT_LITERAL");
         break;
+    case EXPRESSION:
+        strcpy(node_string, "EXPRESSION");
+        break;
+    case UNARY_OP:
+        strcpy(node_string, "UNARY_OP");
+        break;
     default:
         return "";
     }
@@ -57,7 +63,7 @@ void printNode(const struct Node *node, const long indent)
 {
     for (long i = 0; i < indent; i++)
     {
-        printf("\t");
+        printf("    ");
     }
 
     printf(nodeToString(node));
@@ -84,17 +90,25 @@ void nodeAddChild(struct Node *node, struct Node *node_to_add)
     node->children[node->number_of_children - 1] = node_to_add;
 }
 
-void nodePut(struct Node *node, struct StringKeyArbitraryValueMapEntry* value)
+void nodeAddChildrenFromChild(struct Node *node, struct Node *node_children_to_add)
+{
+    for (long i = 0; i < node_children_to_add->number_of_children; i++)
+    {
+        nodeAddChild(node, node_children_to_add->children[i]);
+    }
+}
+
+void nodePut(struct Node *node, struct StringKeyArbitraryValueMapEntry *value)
 {
     stringKeyArbitraryValueMapAddItem(node->data, value);
 }
 
-void nodePutPreviousToken(struct Node *node, struct Token **tokens, long *pos, char* key)
+void nodePutPreviousToken(struct Node *node, struct Token **tokens, long *pos, char *key)
 {
     nodePut(node, stringKeyArbitraryValueMapEntryFactory(key, tokens[(*pos) - 1]->value));
 }
 
-struct ArbitraryValue* nodeGet(struct Node *node, const char* key)
+struct ArbitraryValue *nodeGet(struct Node *node, const char *key)
 {
     return stringKeyArbitraryValueMapGetItem(node->data, key);
 }

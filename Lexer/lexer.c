@@ -163,6 +163,11 @@ struct Token *lexTokenStateMachine(const char *input, long *input_string_pos, st
         case ';':
             token = tokenFactory(SEMICOLON_T, posCopy(screen_pos), NULL);
             break;
+        case '-':
+            char *buff = malloc(2);
+            buff = "-";
+            token = tokenFactory(MINUS_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
+            break;
         case '\0':
             token = tokenFactory(EOF_T, posCopy(screen_pos), NULL);
             break;
