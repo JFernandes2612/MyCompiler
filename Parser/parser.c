@@ -4,9 +4,9 @@
 
 int voidRule(const struct Node *root)
 {
-    return root->nodeType == EXPRESSION || 
-           root->nodeType == ADD_SUB_OP || 
-           root->nodeType == MULT_DIV_OP || 
+    return root->nodeType == EXPRESSION ||
+           root->nodeType == ADD_SUB_OP ||
+           root->nodeType == MULT_DIV_OP ||
            ((root->nodeType == UNARY_OP || root->nodeType == BIN_OP) && root->data->number_of_entries == 0);
 }
 
@@ -205,6 +205,20 @@ int buildUnaryOp(struct Node *root, struct Token **tokens, long *pos)
 
     if (testAnyTokens(tokens, pos, tokens_to_test, 3))
     {
+        if (testToken(tokens, pos, OPEN_PAREN_T, 0) == 0)
+        {
+            if (testRule(root, tokens, pos, EXPRESSION))
+            {
+                return -1;
+            }
+
+            if (testToken(tokens, pos, CLOSE_PAREN_T, 0))
+            {
+                return -1;
+            }
+            return 0;
+        }
+        
         if (testRule(root, tokens, pos, INT_LITERAL))
         {
             return -1;

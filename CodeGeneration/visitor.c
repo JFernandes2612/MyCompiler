@@ -12,7 +12,7 @@ void codeGenerationVisitUnaryOp(struct Node *node, char *assemblyCode)
 {
     codeGenerationVisit(node->children[0], assemblyCode);
 
-    const char* op = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "op"));
+    const char *op = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "op"));
 
     if (strcmp(op, "-") == 0)
         sprintf(assemblyCode, "%s\tnegl %%eax\n", assemblyCode);
@@ -30,7 +30,7 @@ void codeGenerationVisitBinOp(struct Node *node, char *assemblyCode)
     codeGenerationVisit(node->children[1], assemblyCode);
     sprintf(assemblyCode, "%s\tpop %%rcx\n", assemblyCode);
 
-    const char* op = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "op"));
+    const char *op = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "op"));
 
     if (strcmp(op, "+") == 0)
         sprintf(assemblyCode, "%s\taddl %%ecx, %%eax\n", assemblyCode);

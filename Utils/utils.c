@@ -48,7 +48,7 @@ char *readFile(const char *path)
     return ret;
 }
 
-void saveFile(const char *path, const char* dataToSave)
+void saveFile(const char *path, const char *dataToSave)
 {
     FILE *f;
     if ((f = fopen(path, "w")) == NULL)
@@ -127,7 +127,7 @@ const char *arbitraryValueToString(const struct ArbitraryValue *arbitrary_value)
     {
     case INT:
         itoa(*((int *)arbitrary_value->value), buff, 10);
-        buff = realloc(buff, strlen(buff)+1);
+        buff = realloc(buff, strlen(buff) + 1);
         return buff;
         break;
     case STRING:
@@ -141,53 +141,53 @@ const char *arbitraryValueToString(const struct ArbitraryValue *arbitrary_value)
     return "";
 }
 
-struct StringKeyArbitraryValueMapEntry* stringKeyArbitraryValueMapEntryFactory(char *key, struct ArbitraryValue *value)
+struct StringKeyArbitraryValueMapEntry *stringKeyArbitraryValueMapEntryFactory(char *key, struct ArbitraryValue *value)
 {
-    struct StringKeyArbitraryValueMapEntry* ret = malloc(sizeof(struct StringKeyArbitraryValueMapEntry));
+    struct StringKeyArbitraryValueMapEntry *ret = malloc(sizeof(struct StringKeyArbitraryValueMapEntry));
     ret->key = key;
     ret->value = value;
     return ret;
 }
 
-const char *stringKeyArbitraryValueMapEntryToString(const struct StringKeyArbitraryValueMapEntry* entry)
+const char *stringKeyArbitraryValueMapEntryToString(const struct StringKeyArbitraryValueMapEntry *entry)
 {
-    char* buff = malloc(BUFF_SIZE);
+    char *buff = malloc(BUFF_SIZE);
 
     sprintf(buff, "%s: %s", entry->key, arbitraryValueToString(entry->value));
 
     return buff;
 }
 
-void freeStringKeyArbitraryValueMapEntry(struct StringKeyArbitraryValueMapEntry* entry)
+void freeStringKeyArbitraryValueMapEntry(struct StringKeyArbitraryValueMapEntry *entry)
 {
     // The 'key' is always a static string
     // The 'value' should be freed from the Tokens since it inherits the value from there
     free(entry);
 }
 
-struct StringKeyArbitraryValueMap* stringKeyArbitraryValueMapFactory()
+struct StringKeyArbitraryValueMap *stringKeyArbitraryValueMapFactory()
 {
-    struct StringKeyArbitraryValueMap* ret = malloc(sizeof(struct StringKeyArbitraryValueMap));
+    struct StringKeyArbitraryValueMap *ret = malloc(sizeof(struct StringKeyArbitraryValueMap));
     ret->entries = NULL;
     ret->number_of_entries = 0;
 }
 
-void stringKeyArbitraryValueMapAddItem(struct StringKeyArbitraryValueMap* map, struct StringKeyArbitraryValueMapEntry* entry)
+void stringKeyArbitraryValueMapAddItem(struct StringKeyArbitraryValueMap *map, struct StringKeyArbitraryValueMapEntry *entry)
 {
     map->number_of_entries++;
     if (map->entries == NULL)
     {
-        map->entries = malloc(sizeof(struct StringKeyArbitraryValueMapEntry*));
+        map->entries = malloc(sizeof(struct StringKeyArbitraryValueMapEntry *));
     }
     else
     {
-        map->entries = realloc(map->entries, sizeof(struct StringKeyArbitraryValueMapEntry*) * map->number_of_entries);
+        map->entries = realloc(map->entries, sizeof(struct StringKeyArbitraryValueMapEntry *) * map->number_of_entries);
     }
 
     map->entries[map->number_of_entries - 1] = entry;
 }
 
-struct ArbitraryValue* stringKeyArbitraryValueMapGetItem(struct StringKeyArbitraryValueMap* map, const char *key)
+struct ArbitraryValue *stringKeyArbitraryValueMapGetItem(struct StringKeyArbitraryValueMap *map, const char *key)
 {
     for (long i = 0; i < map->number_of_entries; i++)
     {
@@ -200,9 +200,9 @@ struct ArbitraryValue* stringKeyArbitraryValueMapGetItem(struct StringKeyArbitra
     return NULL;
 }
 
-const char* stringKeyArbitraryValueMapToString(const struct StringKeyArbitraryValueMap* map)
+const char *stringKeyArbitraryValueMapToString(const struct StringKeyArbitraryValueMap *map)
 {
-    char* buff = malloc(BUFF_SIZE);
+    char *buff = malloc(BUFF_SIZE);
 
     strcpy(buff, "{");
 
@@ -221,7 +221,7 @@ const char* stringKeyArbitraryValueMapToString(const struct StringKeyArbitraryVa
     return buff;
 }
 
-void freeStringKeyArbitraryValueMap(struct StringKeyArbitraryValueMap* map)
+void freeStringKeyArbitraryValueMap(struct StringKeyArbitraryValueMap *map)
 {
     for (long i = 0; i < map->number_of_entries; i++)
     {
