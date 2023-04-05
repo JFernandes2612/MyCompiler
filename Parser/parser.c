@@ -2,26 +2,26 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int voidRule(const enum NodeType node_type)
+int voidRule(const struct Node *root)
 {
-    return node_type == EXPRESSION;
+    return root->nodeType == EXPRESSION || ((root->nodeType == UNARY_OP || root->nodeType == BIN_OP) && root->data->number_of_entries == 0);
 }
 
 int testRule(struct Node *root, struct Token **tokens, long *pos, const enum NodeType node_type)
 {
-    struct Node *functionNode = nodeFactory(node_type, tokens[*pos]->pos);
+    struct Node *child = nodeFactory(node_type, tokens[*pos]->pos);
     long init_pos = *pos;
-    if (buildRule(functionNode, tokens, pos))
+    if (buildRule(child, tokens, pos))
     {
         (*pos) = init_pos;
-        freeNode(functionNode);
+        freeNode(child);
         return -1;
     }
 
-    if (voidRule(node_type))
-        nodeAddChildrenFromChild(root, functionNode);
+    if (voidRule(child))
+        nodeAddChildrenFromChild(root, child);
     else
-        nodeAddChild(root, functionNode);
+        nodeAddChild(root, child);
 
     return 0;
 }
@@ -32,7 +32,8 @@ int testToken(struct Token **tokens, long *pos, const enum TokenType token_type,
 
     if (token->token_type != token_type)
     {
-        if (error) printf("Expected '%s' found '%s'\n", tokenToString(tokenFactory(token_type, NULL, NULL)), tokenToString(token));
+        if (error)
+            printf("Expected '%s' found '%s'\n", tokenToString(tokenFactory(token_type, NULL, NULL)), tokenToString(token));
         return -1;
     }
 
@@ -45,7 +46,7 @@ int testAnyRules(struct Node *root, struct Token **tokens, long *pos, const enum
 {
     int error = -1;
 
-    for(long i = 0; i < number_of_tests && error; i++)
+    for (long i = 0; i < number_of_tests && error; i++)
     {
         error &= testRule(root, tokens, pos, node_types[i]);
     }
@@ -70,7 +71,7 @@ int testAnyTokens(struct Token **tokens, long *pos, const enum TokenType *token_
 {
     int error = -1;
 
-    for(long i = 0; i < number_of_tests && error; i++)
+    for (long i = 0; i < number_of_tests && error; i++)
     {
         error &= testToken(tokens, pos, token_types[i], 0);
     }
@@ -156,11 +157,36 @@ int buildReturn(struct Node *root, struct Token **tokens, long *pos)
 
 int buildExpression(struct Node *root, struct Token **tokens, long *pos)
 {
-    const enum NodeType nodes_to_test[2] = {INT_LITERAL, UNARY_OP};
-
-    if (testAnyRules(root, tokens, pos, nodes_to_test, 2))
+    if (testRule(root, tokens, pos, BIN_OP))
     {
         return -1;
+    }
+
+    return 0;
+}
+
+int buildBinOp(struct Node *root, struct Token **tokens, long *pos)
+{
+    if (testRule(root, tokens, pos, UNARY_OP))
+    {
+        return -1;
+    }
+
+    const enum TokenType operands_to_test[2] = {MINUS_T, PLUS_T};
+
+    while (1)
+    {
+        if (testAnyTokens(tokens, pos, operands_to_test, 2))
+        {
+            break;
+        }
+
+        nodePutPreviousToken(root, tokens, pos, "op");
+
+        if (testRule(root, tokens, pos, BIN_OP))
+        {
+            break;
+        }
     }
 
     return 0;
@@ -172,12 +198,16 @@ int buildUnaryOp(struct Node *root, struct Token **tokens, long *pos)
 
     if (testAnyTokens(tokens, pos, tokens_to_test, 3))
     {
-        return -1;
+        if (testRule(root, tokens, pos, INT_LITERAL))
+        {
+            return -1;
+        }
+        return 0;
     }
 
     nodePutPreviousToken(root, tokens, pos, "op");
 
-    if (testRule(root, tokens, pos, EXPRESSION))
+    if (testRule(root, tokens, pos, UNARY_OP))
     {
         return -1;
     }
@@ -221,6 +251,9 @@ int buildRule(struct Node *root, struct Token **tokens, long *pos)
         break;
     case UNARY_OP:
         return buildUnaryOp(root, tokens, pos);
+        break;
+    case BIN_OP:
+        return buildBinOp(root, tokens, pos);
         break;
     default:
         break;

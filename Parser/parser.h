@@ -4,7 +4,7 @@
 #include "ast.h"
 #include "../Lexer/token.h"
 
-int voidRule(const enum NodeType node_type);
+int voidRule(const struct Node *root);
 
 int testRule(struct Node *root, struct Token **tokens, long *pos, const enum NodeType node_type);
 
@@ -27,6 +27,8 @@ int buildReturn(struct Node *root, struct Token **tokens, long *pos);
 int buildExpression(struct Node *root, struct Token **tokens, long *pos);
 
 int buildUnaryOp(struct Node *root, struct Token **tokens, long *pos);
+
+int buildBinOp(struct Node *root, struct Token **tokens, long *pos);
 
 int buildIntLiteral(struct Node *root, struct Token **tokens, long *pos);
 

@@ -168,6 +168,10 @@ struct Token *lexTokenStateMachine(const char *input, long *input_string_pos, st
             buff = "-";
             token = tokenFactory(MINUS_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
             break;
+        case '+':
+            buff = "+";
+            token = tokenFactory(PLUS_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
+            break;
         case '~':
             buff = "~";
             token = tokenFactory(NEG_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));

@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
 
     printf("AST:\n");
     printAst(ast);
+    printf("\n\n");
 
 
     char* assemblyCode;

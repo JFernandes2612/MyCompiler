@@ -39,6 +39,9 @@ const char *tokenToString(const struct Token *token)
     case MINUS_T:
         strcpy(token_string, "MINUS");
         break;
+    case PLUS_T:
+        strcpy(token_string, "PLUS");
+        break;
     case NEG_T:
         strcpy(token_string, "NEG");
         break;

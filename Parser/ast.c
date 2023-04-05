@@ -42,6 +42,9 @@ const char *nodeToString(const struct Node *node)
     case UNARY_OP:
         strcpy(node_string, "UNARY_OP");
         break;
+    case BIN_OP:
+        strcpy(node_string, "BIN_OP");
+        break;
     default:
         return "";
     }

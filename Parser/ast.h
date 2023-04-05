@@ -11,6 +11,7 @@ enum NodeType
     BODY,
     EXPRESSION,
     UNARY_OP,
+    BIN_OP,
     RETURN,
 
     INT_LITERAL,
