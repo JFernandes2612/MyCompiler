@@ -174,16 +174,24 @@ int buildBinOp(struct Node *root, struct Token **tokens, long *pos)
 
     const enum TokenType operands_to_test[2] = {MINUS_T, PLUS_T};
 
-    if (testAnyTokens(tokens, pos, operands_to_test, 2))
-    {
-        return 0;
-    }
+    while (1) {
+        struct Node *binop = nodeFactory(BIN_OP, tokens[*pos]->pos);
 
-    nodePutPreviousToken(root, tokens, pos, "op");
+        nodeAddChild(binop, root->children[0]);
 
-    if (testRule(root, tokens, pos, BIN_OP))
-    {
-        return -1;
+        if (testAnyTokens(tokens, pos, operands_to_test, 2))
+        {
+            break;
+        }
+
+        nodePutPreviousToken(binop, tokens, pos, "op");
+
+        if (testRule(binop, tokens, pos, UNARY_OP))
+        {
+            break;
+        }
+
+        root->children[0] = binop;
     }
 
     return 0;

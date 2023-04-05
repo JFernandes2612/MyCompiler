@@ -127,7 +127,7 @@ const char *arbitraryValueToString(const struct ArbitraryValue *arbitrary_value)
     {
     case INT:
         itoa(*((int *)arbitrary_value->value), buff, 10);
-        buff = realloc(buff, strlen(buff));
+        buff = realloc(buff, strlen(buff)+1);
         return buff;
         break;
     case STRING:
