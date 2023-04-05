@@ -7,6 +7,8 @@ void codeGenerationVisitIntLiteral(struct Node *node, char *assemblyCode);
 
 void codeGenerationVisitUnaryOp(struct Node *node, char *assemblyCode);
 
+void codeGenerationVisitBinOp(struct Node *node, char *assemblyCode);
+
 void codeGenerationVisitReturn(struct Node *node, char *assemblyCode);
 
 void codeGenerationVisitFunction(struct Node *node, char *assemblyCode);

@@ -174,19 +174,16 @@ int buildBinOp(struct Node *root, struct Token **tokens, long *pos)
 
     const enum TokenType operands_to_test[2] = {MINUS_T, PLUS_T};
 
-    while (1)
+    if (testAnyTokens(tokens, pos, operands_to_test, 2))
     {
-        if (testAnyTokens(tokens, pos, operands_to_test, 2))
-        {
-            break;
-        }
+        return 0;
+    }
 
-        nodePutPreviousToken(root, tokens, pos, "op");
+    nodePutPreviousToken(root, tokens, pos, "op");
 
-        if (testRule(root, tokens, pos, BIN_OP))
-        {
-            break;
-        }
+    if (testRule(root, tokens, pos, BIN_OP))
+    {
+        return -1;
     }
 
     return 0;

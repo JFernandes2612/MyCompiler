@@ -22,6 +22,22 @@ void codeGenerationVisitUnaryOp(struct Node *node, char *assemblyCode)
         sprintf(assemblyCode, "%s\tcmpl $0, %%eax\n\tmovl $0, %%eax\n\tsete %%al\n", assemblyCode);
 }
 
+void codeGenerationVisitBinOp(struct Node *node, char *assemblyCode)
+{
+    codeGenerationVisit(node->children[0], assemblyCode);
+    sprintf(assemblyCode, "%s\tpush %%rax\n", assemblyCode);
+
+    codeGenerationVisit(node->children[1], assemblyCode);
+    sprintf(assemblyCode, "%s\tpop %%rcx\n", assemblyCode);
+
+    const char* op = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "op"));
+
+    if (strcmp(op, "+") == 0)
+        sprintf(assemblyCode, "%s\taddl %%ecx, %%eax\n", assemblyCode);
+    else if (strcmp(op, "-") == 0)
+        sprintf(assemblyCode, "%s\tsubl %%eax, %%ecx\n\tmov %%ecx, %%eax\n", assemblyCode);
+}
+
 void codeGenerationVisitReturn(struct Node *node, char *assemblyCode)
 {
     // Visit child expression
@@ -75,6 +91,9 @@ void codeGenerationVisit(struct Node *node, char *assemblyCode)
         break;
     case UNARY_OP:
         codeGenerationVisitUnaryOp(node, assemblyCode);
+        break;
+    case BIN_OP:
+        codeGenerationVisitBinOp(node, assemblyCode);
         break;
     default:
         codeGenerationVisitDown(node, assemblyCode);
