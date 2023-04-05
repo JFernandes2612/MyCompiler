@@ -168,9 +168,9 @@ int buildExpression(struct Node *root, struct Token **tokens, long *pos)
 
 int buildUnaryOp(struct Node *root, struct Token **tokens, long *pos)
 {
-    const enum TokenType tokens_to_test[2] = {MINUS_T, NEG_T};
+    const enum TokenType tokens_to_test[3] = {MINUS_T, NEG_T, LOG_NEG_T};
 
-    if (testAnyTokens(tokens, pos, tokens_to_test, 2))
+    if (testAnyTokens(tokens, pos, tokens_to_test, 3))
     {
         return -1;
     }

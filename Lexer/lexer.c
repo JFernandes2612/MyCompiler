@@ -172,6 +172,10 @@ struct Token *lexTokenStateMachine(const char *input, long *input_string_pos, st
             buff = "~";
             token = tokenFactory(NEG_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
             break;
+        case '!':
+            buff = "!";
+            token = tokenFactory(LOG_NEG_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
+            break;
         case '\0':
             token = tokenFactory(EOF_T, posCopy(screen_pos), NULL);
             break;

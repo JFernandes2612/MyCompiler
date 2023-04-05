@@ -12,6 +12,7 @@ enum TokenType
     SEMICOLON_T,
     MINUS_T,
     NEG_T,
+    LOG_NEG_T,
 
     INT_KEYWORD_T,
     RETURN_KEYWORD_T,

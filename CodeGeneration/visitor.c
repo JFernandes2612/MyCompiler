@@ -18,6 +18,8 @@ void codeGenerationVisitUnaryOp(struct Node *node, char *assemblyCode)
         sprintf(assemblyCode, "%s\tneg %%eax\n", assemblyCode);
     else if (strcmp(op, "~") == 0)
         sprintf(assemblyCode, "%s\tnot %%eax\n", assemblyCode);
+    else if (strcmp(op, "!") == 0)
+        sprintf(assemblyCode, "%s\tcmpl $0, %%eax\n\tmovl $0, %%eax\n\tsete %%al\n", assemblyCode);
 }
 
 void codeGenerationVisitReturn(struct Node *node, char *assemblyCode)
