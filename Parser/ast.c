@@ -36,9 +36,6 @@ const char *nodeToString(const struct Node *node)
     case INT_LITERAL:
         strcpy(node_string, "INT_LITERAL");
         break;
-    case EXPRESSION:
-        strcpy(node_string, "EXPRESSION");
-        break;
     case UNARY_OP:
         strcpy(node_string, "UNARY_OP");
         break;

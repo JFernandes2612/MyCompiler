@@ -42,6 +42,12 @@ const char *tokenToString(const struct Token *token)
     case PLUS_T:
         strcpy(token_string, "PLUS");
         break;
+    case TIMES_T:
+        strcpy(token_string, "TIMES");
+        break;
+    case DIV_T:
+        strcpy(token_string, "DIV");
+        break;
     case NEG_T:
         strcpy(token_string, "NEG");
         break;

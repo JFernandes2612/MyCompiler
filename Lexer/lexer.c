@@ -147,6 +147,7 @@ struct Token *lexTokenStateMachine(const char *input, long *input_string_pos, st
     {
         freeToken(token);
         char *buff = malloc(2);
+        sprintf(buff, "%c", c);
         switch (c)
         {
         case '(':
@@ -165,20 +166,22 @@ struct Token *lexTokenStateMachine(const char *input, long *input_string_pos, st
             token = tokenFactory(SEMICOLON_T, posCopy(screen_pos), NULL);
             break;
         case '-':
-            buff = "-";
             token = tokenFactory(MINUS_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
             break;
         case '+':
-            buff = "+";
             token = tokenFactory(PLUS_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
             break;
         case '~':
-            buff = "~";
             token = tokenFactory(NEG_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
             break;
         case '!':
-            buff = "!";
             token = tokenFactory(LOG_NEG_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
+            break;
+        case '*':
+            token = tokenFactory(TIMES_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
+            break;
+        case '/':
+            token = tokenFactory(DIV_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
             break;
         case '\0':
             token = tokenFactory(EOF_T, posCopy(screen_pos), NULL);

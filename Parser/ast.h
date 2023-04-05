@@ -10,8 +10,10 @@ enum NodeType
     FUNCTION,
     BODY,
     EXPRESSION,
-    UNARY_OP,
     BIN_OP,
+    UNARY_OP,
+    ADD_SUB_OP,
+    MULT_DIV_OP,
     RETURN,
 
     INT_LITERAL,

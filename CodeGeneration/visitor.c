@@ -15,9 +15,9 @@ void codeGenerationVisitUnaryOp(struct Node *node, char *assemblyCode)
     const char* op = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "op"));
 
     if (strcmp(op, "-") == 0)
-        sprintf(assemblyCode, "%s\tneg %%eax\n", assemblyCode);
+        sprintf(assemblyCode, "%s\tnegl %%eax\n", assemblyCode);
     else if (strcmp(op, "~") == 0)
-        sprintf(assemblyCode, "%s\tnot %%eax\n", assemblyCode);
+        sprintf(assemblyCode, "%s\tnotl %%eax\n", assemblyCode);
     else if (strcmp(op, "!") == 0)
         sprintf(assemblyCode, "%s\tcmpl $0, %%eax\n\tmovl $0, %%eax\n\tsete %%al\n", assemblyCode);
 }
@@ -36,6 +36,12 @@ void codeGenerationVisitBinOp(struct Node *node, char *assemblyCode)
         sprintf(assemblyCode, "%s\taddl %%ecx, %%eax\n", assemblyCode);
     else if (strcmp(op, "-") == 0)
         sprintf(assemblyCode, "%s\tsubl %%eax, %%ecx\n\tmov %%ecx, %%eax\n", assemblyCode);
+    else if (strcmp(op, "*") == 0)
+        sprintf(assemblyCode, "%s\timul %%ecx, %%eax\n", assemblyCode);
+    else if (strcmp(op, "/") == 0)
+        sprintf(assemblyCode, "%s\txorl %%edx, %%edx\n\tpush %%rax\n\tmovl %%ecx, %%eax\n\tpop %%rcx\n\tidivl %%ecx\n", assemblyCode);
+    else
+        printf("Uknown operator %s\n", op);
 }
 
 void codeGenerationVisitReturn(struct Node *node, char *assemblyCode)

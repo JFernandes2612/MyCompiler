@@ -12,6 +12,8 @@ enum TokenType
     SEMICOLON_T,
     MINUS_T,
     PLUS_T,
+    TIMES_T,
+    DIV_T,
     NEG_T,
     LOG_NEG_T,
 

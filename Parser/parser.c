@@ -4,7 +4,10 @@
 
 int voidRule(const struct Node *root)
 {
-    return root->nodeType == EXPRESSION || ((root->nodeType == UNARY_OP || root->nodeType == BIN_OP) && root->data->number_of_entries == 0);
+    return root->nodeType == EXPRESSION || 
+           root->nodeType == ADD_SUB_OP || 
+           root->nodeType == MULT_DIV_OP || 
+           ((root->nodeType == UNARY_OP || root->nodeType == BIN_OP) && root->data->number_of_entries == 0);
 }
 
 int testRule(struct Node *root, struct Token **tokens, long *pos, const enum NodeType node_type)
@@ -157,7 +160,7 @@ int buildReturn(struct Node *root, struct Token **tokens, long *pos)
 
 int buildExpression(struct Node *root, struct Token **tokens, long *pos)
 {
-    if (testRule(root, tokens, pos, BIN_OP))
+    if (testRule(root, tokens, pos, ADD_SUB_OP))
     {
         return -1;
     }
@@ -165,28 +168,27 @@ int buildExpression(struct Node *root, struct Token **tokens, long *pos)
     return 0;
 }
 
-int buildBinOp(struct Node *root, struct Token **tokens, long *pos)
+int buildBinOp(struct Node *root, struct Token **tokens, long *pos, const enum NodeType next_priority_node_type, const enum TokenType *operands_to_test, const long number_of_tests)
 {
-    if (testRule(root, tokens, pos, UNARY_OP))
+    if (testRule(root, tokens, pos, next_priority_node_type))
     {
         return -1;
     }
 
-    const enum TokenType operands_to_test[2] = {MINUS_T, PLUS_T};
-
-    while (1) {
+    while (1)
+    {
         struct Node *binop = nodeFactory(BIN_OP, tokens[*pos]->pos);
 
         nodeAddChild(binop, root->children[0]);
 
-        if (testAnyTokens(tokens, pos, operands_to_test, 2))
+        if (testAnyTokens(tokens, pos, operands_to_test, number_of_tests))
         {
             break;
         }
 
         nodePutPreviousToken(binop, tokens, pos, "op");
 
-        if (testRule(binop, tokens, pos, UNARY_OP))
+        if (testRule(binop, tokens, pos, next_priority_node_type))
         {
             break;
         }
@@ -257,8 +259,13 @@ int buildRule(struct Node *root, struct Token **tokens, long *pos)
     case UNARY_OP:
         return buildUnaryOp(root, tokens, pos);
         break;
-    case BIN_OP:
-        return buildBinOp(root, tokens, pos);
+    case MULT_DIV_OP:
+        const enum TokenType tokens_to_test_mult_div[2] = {TIMES_T, DIV_T};
+        return buildBinOp(root, tokens, pos, UNARY_OP, tokens_to_test_mult_div, 2);
+        break;
+    case ADD_SUB_OP:
+        const enum TokenType tokens_to_test_add_sub[2] = {PLUS_T, MINUS_T};
+        return buildBinOp(root, tokens, pos, MULT_DIV_OP, tokens_to_test_add_sub, 2);
         break;
     default:
         break;

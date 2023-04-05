@@ -28,7 +28,7 @@ int buildExpression(struct Node *root, struct Token **tokens, long *pos);
 
 int buildUnaryOp(struct Node *root, struct Token **tokens, long *pos);
 
-int buildBinOp(struct Node *root, struct Token **tokens, long *pos);
+int buildBinOp(struct Node *root, struct Token **tokens, long *pos, const enum NodeType next_priority_node_type, const enum TokenType* operands_to_test, const long number_of_tests);
 
 int buildIntLiteral(struct Node *root, struct Token **tokens, long *pos);
 
