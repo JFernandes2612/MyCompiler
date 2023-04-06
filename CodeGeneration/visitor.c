@@ -41,7 +41,7 @@ void codeGenerationVisitBinOp(struct Node *node, char *assemblyCode)
     else if (strcmp(op, "/") == 0)
         sprintf(assemblyCode, "%s\txorl %%edx, %%edx\n\tpush %%rax\n\tmovl %%ecx, %%eax\n\tpop %%rcx\n\tidivl %%ecx\n", assemblyCode);
     else
-        printf("Uknown operator %s\n", op);
+        printf("Unknown operator %s\n", op);
 }
 
 void codeGenerationVisitReturn(struct Node *node, char *assemblyCode)
