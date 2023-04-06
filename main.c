@@ -5,6 +5,7 @@
 #include "Lexer/lexer.h"
 #include "Parser/parser.h"
 #include "CodeGeneration/visitor.h"
+#include "SemanticAnalysis/analyzer.h"
 
 void printUsage(const char *ex)
 {
@@ -51,6 +52,15 @@ int main(int argc, char *argv[])
 
     printf("AST:\n");
     printAst(ast);
+    printf("\n\n");
+
+    int (*f[1])(const struct Ast *) = {analizeOnlyOneMainFunction};
+
+    if (analyze(ast, f, 1))
+    {
+        printf("Error in syntatic analysis\n");
+        return -1;
+    }
     printf("\n\n");
 
 
