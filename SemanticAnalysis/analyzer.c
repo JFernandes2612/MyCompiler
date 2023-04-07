@@ -2,48 +2,46 @@
 #include <string.h>
 #include <stdio.h>
 
-int analyze(const struct Ast *ast, int (**f)(const struct Ast *), long number_of_analyzers)
+int analyze(const struct Ast *ast)
 {
-    for (long i = 0; i < number_of_analyzers; i++)
+    return analyzerVisit(ast->program);
+}
+
+
+int analyzerVisit(struct Node *node)
+{
+    switch (node->nodeType)
     {
-        if ((*f[0])(ast))
-        {
-            return -1;
-        }
+    case FUNCTION:
+        return analyzerFunction(node);
+        break;
+    default:
+        return analyzerVisitDown(node);
+        break;
     }
 
     return 0;
 }
 
-int analizeOnlyOneMainFunction(const struct Ast *ast)
+int analyzerVisitDown(struct Node *node)
 {
-    int foundFirst = 0;
-
-    for (long i = 0; i < ast->program->number_of_children; i++)
+    for (long i = 0; i < node->number_of_children; i++)
     {
-        struct Node *node = ast->program->children[i];
-
-        if (node->nodeType == FUNCTION)
-        {
-            int isMainFunction = strcmp(arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "funcName")), "main") == 0;
-
-            if (!foundFirst && isMainFunction)
-            {
-                foundFirst = 1;
-            }
-            else if (isMainFunction)
-            {
-                printf("Semantic Error: Main function re-declaration at %s\n", posToString(node->pos));
-                return -1;
-            }
-        }
-    }
-
-    if (!foundFirst)
-    {
-        printf("Semantic Error: Main function not found\n");
-        return -1;
+        if (analyzerVisit(node->children[i]))
+            return -1;
     }
 
     return 0;
+}
+
+int analyzerFunction(struct Node *node)
+{
+    // Check if the only function is the main function
+    if (strcmp(arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "funcName")), "main"))
+    {
+        printf("No main function found\n");
+        return -1;
+    }
+
+    return analyzerVisitDown(node);
 }

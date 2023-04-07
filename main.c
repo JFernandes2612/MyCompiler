@@ -54,9 +54,7 @@ int main(int argc, char *argv[])
     printAst(ast);
     printf("\n\n");
 
-    int (*f[1])(const struct Ast *) = {analizeOnlyOneMainFunction};
-
-    if (analyze(ast, f, 1))
+    if (analyze(ast))
     {
         printf("Error in syntatic analysis\n");
         return -1;
