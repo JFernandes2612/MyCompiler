@@ -14,7 +14,8 @@ struct Token *lexTokenStateMachineDigit(const char *input, long *input_string_po
 
     while (isdigit(c))
     {
-        (*value) += (int)(c - 48) * mult;
+        (*value) *= mult;
+        (*value) += (int)(c - 48);
         mult *= 10;
 
         forward(input_string_pos, screen_pos, 1);
