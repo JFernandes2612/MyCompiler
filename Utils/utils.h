@@ -23,7 +23,7 @@ void posAddColumn(struct Pos *pos, const long column);
 
 void posNewLine(struct Pos *pos);
 
-const char *posToString(const struct Pos *pos);
+char *posToString(const struct Pos *pos);
 
 void forward(long *pos_l, struct Pos *pos_p, const long n);
 
@@ -41,7 +41,9 @@ struct ArbitraryValue
 
 struct ArbitraryValue *arbitraryValueFactory(const enum Type type, void *value);
 
-const char *arbitraryValueToString(const struct ArbitraryValue *arbitrary_value);
+char *arbitraryValueToString(const struct ArbitraryValue *arbitrary_value);
+
+void freeArbitraryValue(struct ArbitraryValue *arbitrary_value);
 
 struct StringKeyArbitraryValueMapEntry
 {
@@ -51,7 +53,7 @@ struct StringKeyArbitraryValueMapEntry
 
 struct StringKeyArbitraryValueMapEntry *stringKeyArbitraryValueMapEntryFactory(char *key, struct ArbitraryValue *value);
 
-const char *stringKeyArbitraryValueMapEntryToString(const struct StringKeyArbitraryValueMapEntry *entry);
+char *stringKeyArbitraryValueMapEntryToString(const struct StringKeyArbitraryValueMapEntry *entry);
 
 void freeStringKeyArbitraryValueMapEntry(struct StringKeyArbitraryValueMapEntry *entry);
 
@@ -67,7 +69,7 @@ void stringKeyArbitraryValueMapAddItem(struct StringKeyArbitraryValueMap *map, s
 
 struct ArbitraryValue *stringKeyArbitraryValueMapGetItem(struct StringKeyArbitraryValueMap *map, const char *key);
 
-const char *stringKeyArbitraryValueMapToString(const struct StringKeyArbitraryValueMap *map);
+char *stringKeyArbitraryValueMapToString(const struct StringKeyArbitraryValueMap *map);
 
 void freeStringKeyArbitraryValueMap(struct StringKeyArbitraryValueMap *map);
 

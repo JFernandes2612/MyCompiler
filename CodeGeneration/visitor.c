@@ -5,43 +5,55 @@
 
 void codeGenerationVisitIntLiteral(struct Node *node, char *assemblyCode)
 {
-    sprintf(assemblyCode, "%s\tmovl $%s, %%eax\n", assemblyCode, arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "value")));
+    char *int_value_in_string = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "value"));
+    char *buff = malloc(BUFF_SIZE);
+    strcpy(buff, "");
+    sprintf(buff, "\tmovl $%s, %%eax\n", int_value_in_string);
+    strcat(assemblyCode, buff);
+    free(buff);
+    free(int_value_in_string);
 }
 
 void codeGenerationVisitUnaryOp(struct Node *node, char *assemblyCode)
 {
     codeGenerationVisit(node->children[0], assemblyCode);
 
-    const char *op = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "op"));
+    char *op = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "op"));
 
     if (strcmp(op, "-") == 0)
-        sprintf(assemblyCode, "%s\tnegl %%eax\n", assemblyCode);
+        strcat(assemblyCode, "\tnegl %eax\n");
     else if (strcmp(op, "~") == 0)
-        sprintf(assemblyCode, "%s\tnotl %%eax\n", assemblyCode);
+        strcat(assemblyCode, "\tnotl %eax\n");
     else if (strcmp(op, "!") == 0)
-        sprintf(assemblyCode, "%s\tcmpl $0, %%eax\n\tmovl $0, %%eax\n\tsete %%al\n", assemblyCode);
+        strcat(assemblyCode, "\tcmpl $0, %eax\n\tmovl $0, %eax\n\tsete %al\n");
+    else // Should never happen
+        printf("Unknown operator %s\n", op);
+
+    free(op);
 }
 
 void codeGenerationVisitBinOp(struct Node *node, char *assemblyCode)
 {
     codeGenerationVisit(node->children[0], assemblyCode);
-    sprintf(assemblyCode, "%s\tpush %%rax\n", assemblyCode);
+    strcat(assemblyCode, "\tpush %rax\n");
 
     codeGenerationVisit(node->children[1], assemblyCode);
-    sprintf(assemblyCode, "%s\tpop %%rcx\n", assemblyCode);
+    strcat(assemblyCode, "\tpop %rcx\n");
 
-    const char *op = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "op"));
+    char *op = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "op"));
 
     if (strcmp(op, "+") == 0)
-        sprintf(assemblyCode, "%s\taddl %%ecx, %%eax\n", assemblyCode);
+        strcat(assemblyCode, "\taddl %ecx, %eax\n");
     else if (strcmp(op, "-") == 0)
-        sprintf(assemblyCode, "%s\tsubl %%eax, %%ecx\n\tmov %%ecx, %%eax\n", assemblyCode);
+        strcat(assemblyCode, "\tsubl %eax, %ecx\n\tmov %ecx, %eax\n");
     else if (strcmp(op, "*") == 0)
-        sprintf(assemblyCode, "%s\timul %%ecx, %%eax\n", assemblyCode);
+        strcat(assemblyCode, "\timul %ecx, %eax\n");
     else if (strcmp(op, "/") == 0)
-        sprintf(assemblyCode, "%s\txorl %%edx, %%edx\n\tpush %%rax\n\tmovl %%ecx, %%eax\n\tpop %%rcx\n\tidivl %%ecx\n", assemblyCode);
-    else
+        strcat(assemblyCode, "\txorl %edx, %edx\n\tpush %rax\n\tmovl %ecx, %eax\n\tpop %rcx\n\tidivl %ecx\n");
+    else // Should never happen
         printf("Unknown operator %s\n", op);
+
+    free(op);
 }
 
 void codeGenerationVisitReturn(struct Node *node, char *assemblyCode)
@@ -54,7 +66,9 @@ void codeGenerationVisitReturn(struct Node *node, char *assemblyCode)
 
 void codeGenerationVisitFunction(struct Node *node, char *assemblyCode)
 {
-    sprintf(assemblyCode, "%s%s:\n", assemblyCode, arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "funcName")));
+    char *func_name = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "funcName"));
+    sprintf(assemblyCode, "%s%s:\n", assemblyCode, func_name);
+    free(func_name);
 
     // Visit Function Body
     codeGenerationVisit(node->children[0], assemblyCode);

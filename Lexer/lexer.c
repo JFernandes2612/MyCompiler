@@ -77,10 +77,12 @@ struct Token *lexTokenStateMachineAlpha(const char *input, long *input_string_po
             struct Token *new_token = tokenFactory(IDENTIFIER_T, posCopy(screen_pos), NULL);
             if (c == 'i')
             {
+                freeToken(new_token);
                 new_token = lexTokenStateMachineAlphaIntKeyword(input, input_string_pos, screen_pos, value, &counter);
             }
             else if (c == 'r')
             {
+                freeToken(new_token);
                 new_token = lexTokenStateMachineAlphaReturnKeyword(input, input_string_pos, screen_pos, value, &counter);
             }
 
@@ -93,6 +95,7 @@ struct Token *lexTokenStateMachineAlpha(const char *input, long *input_string_po
                 return new_token;
             }
 
+            freeToken(new_token);
             continue;
         }
 
@@ -131,6 +134,7 @@ struct Token *lexTokenStateMachine(const char *input, long *input_string_pos, st
 
     if (isdigit(c))
     {
+        freeToken(token);
         token = lexTokenStateMachineDigit(input, input_string_pos, screen_pos);
 
         // Invalidate identifiers that start with a number
@@ -142,6 +146,7 @@ struct Token *lexTokenStateMachine(const char *input, long *input_string_pos, st
     }
     else if (isalpha(c))
     {
+        freeToken(token);
         token = lexTokenStateMachineAlpha(input, input_string_pos, screen_pos);
     }
     else
@@ -151,21 +156,6 @@ struct Token *lexTokenStateMachine(const char *input, long *input_string_pos, st
         sprintf(buff, "%c", c);
         switch (c)
         {
-        case '(':
-            token = tokenFactory(OPEN_PAREN_T, posCopy(screen_pos), NULL);
-            break;
-        case ')':
-            token = tokenFactory(CLOSE_PAREN_T, posCopy(screen_pos), NULL);
-            break;
-        case '{':
-            token = tokenFactory(OPEN_BRACE_T, posCopy(screen_pos), NULL);
-            break;
-        case '}':
-            token = tokenFactory(CLOSE_BRACE_T, posCopy(screen_pos), NULL);
-            break;
-        case ';':
-            token = tokenFactory(SEMICOLON_T, posCopy(screen_pos), NULL);
-            break;
         case '-':
             token = tokenFactory(MINUS_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
             break;
@@ -183,6 +173,27 @@ struct Token *lexTokenStateMachine(const char *input, long *input_string_pos, st
             break;
         case '/':
             token = tokenFactory(DIV_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
+            break;
+        default:
+            free(buff);
+        }
+
+        switch (c)
+        {
+        case '(':
+            token = tokenFactory(OPEN_PAREN_T, posCopy(screen_pos), NULL);
+            break;
+        case ')':
+            token = tokenFactory(CLOSE_PAREN_T, posCopy(screen_pos), NULL);
+            break;
+        case '{':
+            token = tokenFactory(OPEN_BRACE_T, posCopy(screen_pos), NULL);
+            break;
+        case '}':
+            token = tokenFactory(CLOSE_BRACE_T, posCopy(screen_pos), NULL);
+            break;
+        case ';':
+            token = tokenFactory(SEMICOLON_T, posCopy(screen_pos), NULL);
             break;
         case '\0':
             token = tokenFactory(EOF_T, posCopy(screen_pos), NULL);

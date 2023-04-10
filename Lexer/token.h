@@ -36,7 +36,7 @@ struct Token
 
 struct Token *tokenFactory(const enum TokenType token_type, struct Pos *pos, struct ArbitraryValue *arbitrary_value);
 
-const char *tokenToString(const struct Token *token);
+char *tokenToString(const struct Token *token);
 
 void printToken(const struct Token *token);
 
