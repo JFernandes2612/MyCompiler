@@ -86,7 +86,7 @@ struct Token *tokenFactory(const enum TokenType token_type, struct Pos *pos, str
 
 void printToken(const struct Token *token)
 {
-    printf(tokenToString(token));
+    printf("%s", tokenToString(token));
 }
 
 void printTokenArray(struct Token **tokens)

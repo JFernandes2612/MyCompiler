@@ -66,7 +66,7 @@ void printNode(const struct Node *node, const long indent)
         printf("    ");
     }
 
-    printf(nodeToString(node));
+    printf("%s", nodeToString(node));
     printf("\n");
 
     for (long i = 0; i < node->number_of_children; i++)

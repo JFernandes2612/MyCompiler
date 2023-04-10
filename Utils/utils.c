@@ -98,7 +98,7 @@ const char *posToString(const struct Pos *pos)
 {
     char *buff = malloc(BUFF_SIZE);
 
-    sprintf(buff, "[line: %d, column: %d]", pos->line, pos->column);
+    sprintf(buff, "[line: %ld, column: %ld]", pos->line, pos->column);
 
     buff = realloc(buff, strlen(buff) + 1);
 
@@ -126,7 +126,7 @@ const char *arbitraryValueToString(const struct ArbitraryValue *arbitrary_value)
     switch (arbitrary_value->type)
     {
     case INT:
-        itoa(*((int *)arbitrary_value->value), buff, 10);
+        sprintf(buff ,"%d", *((int *)arbitrary_value->value));
         buff = realloc(buff, strlen(buff) + 1);
         return buff;
         break;
