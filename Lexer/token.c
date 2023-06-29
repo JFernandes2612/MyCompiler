@@ -9,52 +9,52 @@ const char *tokenToString(const struct Token *token)
 
     switch (token->token_type)
     {
-    case OPEN_BRACE_T:
+    case OPEN_BRACE_T: // {
         strcpy(token_string, "OPEN_BRACE");
         break;
-    case CLOSE_BRACE_T:
+    case CLOSE_BRACE_T: // }
         strcpy(token_string, "CLOSE_BRACE");
         break;
-    case OPEN_PAREN_T:
+    case OPEN_PAREN_T: // (
         strcpy(token_string, "OPEN_PAREN");
         break;
-    case CLOSE_PAREN_T:
+    case CLOSE_PAREN_T: // )
         strcpy(token_string, "CLOSE_PAREN");
         break;
-    case SEMICOLON_T:
+    case SEMICOLON_T: // ;
         strcpy(token_string, "SEMICOLON");
         break;
-    case INT_KEYWORD_T:
+    case INT_KEYWORD_T: // int
         strcpy(token_string, "INT_KEYWORD");
         break;
-    case RETURN_KEYWORD_T:
+    case RETURN_KEYWORD_T: // return
         strcpy(token_string, "RETURN_KEYWORD");
         break;
-    case IDENTIFIER_T:
+    case IDENTIFIER_T: // var
         strcpy(token_string, "IDENTIFIER");
         break;
-    case INT_LITERAL_T:
+    case INT_LITERAL_T: // 123456789
         strcpy(token_string, "INT_LITERAL");
         break;
-    case MINUS_T:
+    case MINUS_T: // -
         strcpy(token_string, "MINUS");
         break;
-    case PLUS_T:
+    case PLUS_T: // +
         strcpy(token_string, "PLUS");
         break;
-    case TIMES_T:
+    case TIMES_T: // *
         strcpy(token_string, "TIMES");
         break;
-    case DIV_T:
+    case DIV_T: // /
         strcpy(token_string, "DIV");
         break;
-    case NEG_T:
+    case NEG_T: // ~
         strcpy(token_string, "NEG");
         break;
-    case LOG_NEG_T:
+    case LOG_NEG_T: // !
         strcpy(token_string, "LOG_NEG");
         break;
-    case EOF_T:
+    case EOF_T: // EOF
         strcpy(token_string, "EOF");
         break;
     default:
