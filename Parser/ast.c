@@ -15,7 +15,7 @@ struct Node *nodeFactory(const enum NodeType nodeType, struct Pos *pos)
     return ret;
 }
 
-const char *nodeToString(const struct Node *node)
+char *nodeToString(const struct Node *node)
 {
     char *node_string = malloc(BUFF_SIZE);
 
@@ -48,13 +48,21 @@ const char *nodeToString(const struct Node *node)
 
     if (node->pos != NULL)
     {
-        sprintf(node_string, "%s %s", node_string, posToString(node->pos));
+        strcat(node_string, " ");
+        char *pos_string = posToString(node->pos);
+        strcat(node_string, pos_string);
+        free(pos_string);
     }
 
     if (node->data->number_of_entries != 0)
     {
-        sprintf(node_string, "%s %s", node_string, stringKeyArbitraryValueMapToString(node->data));
+        strcat(node_string, " ");
+        char *data_string = stringKeyArbitraryValueMapToString(node->data);
+        strcat(node_string, data_string);
+        free(data_string);
     }
+
+    node_string = realloc(node_string, strlen(node_string) + 1);
 
     return node_string;
 }
@@ -66,7 +74,9 @@ void printNode(const struct Node *node, const long indent)
         printf("    ");
     }
 
-    printf(nodeToString(node));
+    char *node_string = nodeToString(node);
+    printf("%s", node_string);
+    free(node_string);
     printf("\n");
 
     for (long i = 0; i < node->number_of_children; i++)
@@ -120,6 +130,11 @@ void freeNode(struct Node *node)
         freeNode(node->children[i]);
     }
     // 'pos' is inherited from the 1st token it represents, therefore it is freed there
+    freeNodeLessChildren(node);
+}
+
+void freeNodeLessChildren(struct Node *node)
+{
     free(node->children);
     freeStringKeyArbitraryValueMap(node->data);
     free(node);
@@ -133,4 +148,5 @@ void printAst(const struct Ast *ast)
 void freeAst(struct Ast *ast)
 {
     freeNode(ast->program);
+    free(ast);
 }

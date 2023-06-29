@@ -9,6 +9,6 @@ int analyzerVisit(struct Node *node);
 
 int analyzerVisitDown(struct Node *node);
 
-int analyzerFunction(struct Node *node);
+int analyzerVisitFunction(struct Node *node);
 
 #endif

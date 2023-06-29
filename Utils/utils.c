@@ -45,6 +45,12 @@ char *readFile(const char *path)
 
     fread(ret, sizeof(char), file_size, f);
 
+    if (fclose(f))
+    {
+        printf("Error unable to close file\n");
+        return NULL;
+    }
+
     return ret;
 }
 
@@ -94,11 +100,11 @@ void posNewLine(struct Pos *pos)
     pos->column = 1;
 }
 
-const char *posToString(const struct Pos *pos)
+char *posToString(const struct Pos *pos)
 {
     char *buff = malloc(BUFF_SIZE);
 
-    sprintf(buff, "[line: %d, column: %d]", pos->line, pos->column);
+    sprintf(buff, "[line: %ld, column: %ld]", pos->line, pos->column);
 
     buff = realloc(buff, strlen(buff) + 1);
 
@@ -120,25 +126,31 @@ struct ArbitraryValue *arbitraryValueFactory(const enum Type type, void *value)
     return ret;
 }
 
-const char *arbitraryValueToString(const struct ArbitraryValue *arbitrary_value)
+char *arbitraryValueToString(const struct ArbitraryValue *arbitrary_value)
 {
     char *buff = malloc(BUFF_SIZE);
     switch (arbitrary_value->type)
     {
     case INT:
-        itoa(*((int *)arbitrary_value->value), buff, 10);
-        buff = realloc(buff, strlen(buff) + 1);
-        return buff;
+        sprintf(buff, "%d", *((int *)arbitrary_value->value));
         break;
     case STRING:
-        free(buff);
-        return (char *)arbitrary_value->value;
+        strcpy(buff, (char *)arbitrary_value->value);
         break;
     default:
+        buff = NULL;
         break;
     }
 
-    return "";
+    buff = realloc(buff, strlen(buff) + 1);
+
+    return buff;
+}
+
+void freeArbitraryValue(struct ArbitraryValue *arbitrary_value)
+{
+    free(arbitrary_value->value);
+    free(arbitrary_value);
 }
 
 struct StringKeyArbitraryValueMapEntry *stringKeyArbitraryValueMapEntryFactory(char *key, struct ArbitraryValue *value)
@@ -149,11 +161,17 @@ struct StringKeyArbitraryValueMapEntry *stringKeyArbitraryValueMapEntryFactory(c
     return ret;
 }
 
-const char *stringKeyArbitraryValueMapEntryToString(const struct StringKeyArbitraryValueMapEntry *entry)
+char *stringKeyArbitraryValueMapEntryToString(const struct StringKeyArbitraryValueMapEntry *entry)
 {
     char *buff = malloc(BUFF_SIZE);
 
-    sprintf(buff, "%s: %s", entry->key, arbitraryValueToString(entry->value));
+    char *value = arbitraryValueToString(entry->value);
+
+    sprintf(buff, "%s: %s", entry->key, value);
+
+    buff = realloc(buff, strlen(buff) + 1);
+
+    free(value);
 
     return buff;
 }
@@ -200,7 +218,7 @@ struct ArbitraryValue *stringKeyArbitraryValueMapGetItem(struct StringKeyArbitra
     return NULL;
 }
 
-const char *stringKeyArbitraryValueMapToString(const struct StringKeyArbitraryValueMap *map)
+char *stringKeyArbitraryValueMapToString(const struct StringKeyArbitraryValueMap *map)
 {
     char *buff = malloc(BUFF_SIZE);
 
@@ -208,7 +226,9 @@ const char *stringKeyArbitraryValueMapToString(const struct StringKeyArbitraryVa
 
     for (long i = 0; i < map->number_of_entries; i++)
     {
-        sprintf(buff, "%s %s", buff, stringKeyArbitraryValueMapEntryToString(map->entries[i]));
+        char *map_entry_string = stringKeyArbitraryValueMapEntryToString(map->entries[i]);
+        sprintf(buff, "%s %s", buff, map_entry_string);
+        free(map_entry_string);
 
         if (i + 1 != map->number_of_entries)
         {

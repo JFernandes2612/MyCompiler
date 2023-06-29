@@ -41,11 +41,13 @@ void nodePutPreviousToken(struct Node *node, struct Token **tokens, long *pos, c
 
 struct ArbitraryValue *nodeGet(struct Node *node, const char *key);
 
-const char *nodeToString(const struct Node *node);
+char *nodeToString(const struct Node *node);
 
 void printNode(const struct Node *node, const long indent);
 
 void freeNode(struct Node *node);
+
+void freeNodeLessChildren(struct Node *node);
 
 struct Ast
 {

@@ -22,9 +22,14 @@ int testRule(struct Node *root, struct Token **tokens, long *pos, const enum Nod
     }
 
     if (voidRule(child))
+    {
         nodeAddChildrenFromChild(root, child);
+        freeNodeLessChildren(child);
+    }
     else
+    {
         nodeAddChild(root, child);
+    }
 
     return 0;
 }
@@ -183,6 +188,7 @@ int buildBinOp(struct Node *root, struct Token **tokens, long *pos, const enum N
 
         if (testAnyTokens(tokens, pos, operands_to_test, number_of_tests))
         {
+            freeNodeLessChildren(binop);
             break;
         }
 
@@ -190,6 +196,7 @@ int buildBinOp(struct Node *root, struct Token **tokens, long *pos, const enum N
 
         if (testRule(binop, tokens, pos, next_priority_node_type))
         {
+            freeNodeLessChildren(binop);
             break;
         }
 
@@ -218,7 +225,7 @@ int buildUnaryOp(struct Node *root, struct Token **tokens, long *pos)
             }
             return 0;
         }
-        
+
         if (testRule(root, tokens, pos, INT_LITERAL))
         {
             return -1;

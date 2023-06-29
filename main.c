@@ -66,10 +66,16 @@ int main(int argc, char *argv[])
     assemblyCode = codeGeneration(ast);
 
     printf("Assembly Code:\n%s", assemblyCode);
+    printf("\n\n");
 
-    saveFile(".\\input.s", assemblyCode);
+    saveFile("./input.s", assemblyCode);
 
-    execlp("gcc", "gcc .\\input.s", "-o input.exe", NULL);
+    system("gcc ./input.s -o ./input.out");
+
+    int result = system("./input.out");
+
+    printf("Result: %d\n", result / 256);
+
 
     free(assemblyCode);
     freeAst(ast);

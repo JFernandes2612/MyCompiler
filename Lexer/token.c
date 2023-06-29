@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const char *tokenToString(const struct Token *token)
+char *tokenToString(const struct Token *token)
 {
     char *token_string = malloc(BUFF_SIZE);
 
@@ -64,13 +64,22 @@ const char *tokenToString(const struct Token *token)
 
     if (token->pos != NULL)
     {
-        sprintf(token_string, "%s %s", token_string, posToString(token->pos));
+        strcat(token_string, " ");
+        char *pos_string = posToString(token->pos);
+        strcat(token_string, pos_string);
+        free(pos_string);
     }
 
     if (token->value != NULL)
     {
-        sprintf(token_string, "%s (%s)", token_string, arbitraryValueToString(token->value));
+        strcat(token_string, " (");
+        char *value_string = arbitraryValueToString(token->value);
+        strcat(token_string, value_string);
+        strcat(token_string, ")");
+        free(value_string);
     }
+
+    token_string = realloc(token_string, strlen(token_string) + 1);
 
     return token_string;
 }
@@ -86,7 +95,9 @@ struct Token *tokenFactory(const enum TokenType token_type, struct Pos *pos, str
 
 void printToken(const struct Token *token)
 {
-    printf(tokenToString(token));
+    char *buff = tokenToString(token);
+    printf("%s", buff);
+    free(buff);
 }
 
 void printTokenArray(struct Token **tokens)
@@ -111,7 +122,7 @@ void freeToken(struct Token *token)
 {
     if (token->value != NULL)
     {
-        free(token->value);
+        freeArbitraryValue(token->value);
     }
 
     if (token->pos != NULL)
