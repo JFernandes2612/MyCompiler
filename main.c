@@ -70,11 +70,18 @@ int main(int argc, char *argv[])
 
     saveFile("./input.s", assemblyCode);
 
+    int result;
+
+    #ifdef unix
     system("gcc ./input.s -o ./input.out");
-
-    int result = system("./input.out");
-
-    printf("Result: %d\n", result / 256);
+    result = system("./input.out");
+    result /= 256;
+    #elif _WIN64
+    system("gcc ./input.s -o ./input.exe");
+    result = system(".\\input.exe");
+    #endif
+    
+    printf("Result: %d\n", result);
 
 
     free(assemblyCode);
