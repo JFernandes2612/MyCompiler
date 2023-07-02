@@ -21,10 +21,10 @@ In very early development. Only simple operations fully implemented in the curre
 ### Syntax grammar
 
 ```html
-<program> ::= <function> "\0"
-<function> ::= "int" <id> "(" ")" "{" <body> "}"
+<program> ::= <function> '\0'
+<function> ::= 'int' [_a-zA-Z]([_a-zA-Z0-9])* '(' ')' '{' <body> '}'
 <body> ::= <return>
-<return> ::= "return" <expression> ";"
+<return> ::= 'return' <expression> ';'
 <expression> ::= <addsubop>
 <addsubop> ::= <multdivop> ( ( '+' | '-' ) <multdivop> )*
 <multdivop> ::= <unaryop> ( ( '*' | '/' ) <unaryop> )*
@@ -33,4 +33,4 @@ In very early development. Only simple operations fully implemented in the curre
 
 ### Semantic Rules
 
-1. Checks for 'main' function declaration
+1. Checks for the `main` function declaration
