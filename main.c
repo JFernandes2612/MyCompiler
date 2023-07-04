@@ -61,9 +61,12 @@ int main(int argc, char *argv[])
     }
     printf("\n\n");
 
-
-    char* assemblyCode;
-    assemblyCode = codeGeneration(ast);
+    char *assemblyCode;
+    if ((assemblyCode = codeGeneration(ast)) == NULL)
+    {
+        printf("Error in code generation\n");
+        return -1;
+    }
 
     printf("Assembly Code:\n%s", assemblyCode);
     printf("\n\n");
@@ -72,17 +75,16 @@ int main(int argc, char *argv[])
 
     int result;
 
-    #ifdef unix
+#ifdef unix
     system("gcc ./input.s -o ./input.out");
     result = system("./input.out");
     result /= 256;
-    #elif _WIN64
+#elif _WIN64
     system("gcc ./input.s -o ./input.exe");
     result = system(".\\input.exe");
-    #endif
-    
-    printf("Result: %d\n", result);
+#endif
 
+    printf("Result: %d\n", result);
 
     free(assemblyCode);
     freeAst(ast);

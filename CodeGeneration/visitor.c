@@ -3,7 +3,18 @@
 #include <stdio.h>
 #include <string.h>
 
-void codeGenerationVisitIntLiteral(struct Node *node, char *assemblyCode)
+static int i = 0;
+
+char *codeGenerationLabel()
+{
+    char *buff = malloc(BUFF_SIZE);
+    strcpy(buff, "");
+    sprintf(buff, "_label_%d", i);
+    i++;
+    return buff;
+}
+
+int codeGenerationVisitIntLiteral(struct Node *node, char *assemblyCode)
 {
     char *int_value_in_string = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "value"));
     char *buff = malloc(BUFF_SIZE);
@@ -12,11 +23,12 @@ void codeGenerationVisitIntLiteral(struct Node *node, char *assemblyCode)
     strcat(assemblyCode, buff);
     free(buff);
     free(int_value_in_string);
+    return 0;
 }
 
-void codeGenerationVisitUnaryOp(struct Node *node, char *assemblyCode)
+int codeGenerationVisitUnaryOp(struct Node *node, char *assemblyCode)
 {
-    codeGenerationVisit(node->children[0], assemblyCode);
+    int error = codeGenerationVisit(node->children[0], assemblyCode);
 
     char *op = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "op"));
 
@@ -27,98 +39,168 @@ void codeGenerationVisitUnaryOp(struct Node *node, char *assemblyCode)
     else if (strcmp(op, "!") == 0)
         strcat(assemblyCode, "\tcmpl $0, %eax\n\tmovl $0, %eax\n\tsete %al\n");
     else // Should never happen
+    {
         printf("Unknown operator %s\n", op);
+        return 1;
+    }
 
     free(op);
+    return error;
 }
 
-void codeGenerationVisitBinOp(struct Node *node, char *assemblyCode)
+int codeGenerationVisitBinOp(struct Node *node, char *assemblyCode)
 {
-    codeGenerationVisit(node->children[0], assemblyCode);
-    strcat(assemblyCode, "\tpush %rax\n");
-
-    codeGenerationVisit(node->children[1], assemblyCode);
-    strcat(assemblyCode, "\tpop %rcx\n");
-
     char *op = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "op"));
+    int error = 0;
 
-    if (strcmp(op, "+") == 0)
-        strcat(assemblyCode, "\taddl %ecx, %eax\n");
-    else if (strcmp(op, "-") == 0)
-        strcat(assemblyCode, "\tsubl %eax, %ecx\n\tmov %ecx, %eax\n");
-    else if (strcmp(op, "*") == 0)
-        strcat(assemblyCode, "\timul %ecx, %eax\n");
-    else if (strcmp(op, "/") == 0)
-        strcat(assemblyCode, "\txorl %edx, %edx\n\tpush %rax\n\tmovl %ecx, %eax\n\tpop %rcx\n\tidivl %ecx\n");
-    else // Should never happen
-        printf("Unknown operator %s\n", op);
+    if (strcmp(op, "||") == 0 || strcmp(op, "&&") == 0)
+    {
+        char *buff = malloc(BUFF_SIZE);
+        strcpy(buff, "");
 
+        char *label1 = codeGenerationLabel();
+        char *label2 = codeGenerationLabel();
+
+        error |= codeGenerationVisit(node->children[0], assemblyCode);
+
+        strcat(assemblyCode, "\tcmpl $0, %eax\n");
+
+        if (strcmp(op, "||") == 0)
+            sprintf(buff, "\tje %s\n\tmovl $1, %%eax\n", label1);
+        else if (strcmp(op, "&&") == 0)
+            sprintf(buff, "\tjne %s\n", label1);
+        else
+        {
+            printf("Unknown operator %s\n", op);
+            return 1;
+        }
+
+        strcat(assemblyCode, buff);
+
+        strcpy(buff, "");
+        sprintf(buff, "\tjmp %s\n%s:\n", label2, label1);
+        strcat(assemblyCode, buff);
+
+        error |= codeGenerationVisit(node->children[1], assemblyCode);
+
+        strcpy(buff, "");
+        sprintf(buff, "\tcmpl $0, %%eax\n\tmovl $0, %%eax\n\tsetne %%al\n%s:\n", label2);
+        strcat(assemblyCode, buff);
+
+        free(label1);
+        free(label2);
+    }
+    else
+    {
+        error |= codeGenerationVisit(node->children[0], assemblyCode);
+        strcat(assemblyCode, "\tpush %rax\n");
+
+        error |= codeGenerationVisit(node->children[1], assemblyCode);
+        strcat(assemblyCode, "\tpop %rcx\n");
+
+        if (strcmp(op, "+") == 0)
+            strcat(assemblyCode, "\taddl %ecx, %eax\n");
+        else if (strcmp(op, "-") == 0)
+            strcat(assemblyCode, "\tsubl %eax, %ecx\n\tmov %ecx, %eax\n");
+        else if (strcmp(op, "*") == 0)
+            strcat(assemblyCode, "\timul %ecx, %eax\n");
+        else if (strcmp(op, "/") == 0)
+            strcat(assemblyCode, "\txorl %edx, %edx\n\tpush %rax\n\tmovl %ecx, %eax\n\tpop %rcx\n\tidivl %ecx\n");
+        else if (strcmp(op, "==") == 0 || strcmp(op, "!=") == 0 || strcmp(op, "<=") == 0 || strcmp(op, ">=") == 0 || strcmp(op, "<") == 0 || strcmp(op, ">") == 0)
+        {
+            strcat(assemblyCode, "\tcmpl %eax, %ecx\n\tmovl $0, %eax\n");
+
+            if (strcmp(op, "==") == 0)
+                strcat(assemblyCode, "\tsete %al\n");
+            else if (strcmp(op, "!=") == 0)
+                strcat(assemblyCode, "\tsetne %al\n");
+            else if (strcmp(op, "<=") == 0)
+                strcat(assemblyCode, "\tsetle %al\n");
+            else if (strcmp(op, ">=") == 0)
+                strcat(assemblyCode, "\tsetge %al\n");
+            else if (strcmp(op, "<") == 0)
+                strcat(assemblyCode, "\tsetl %al\n");
+            else if (strcmp(op, ">") == 0)
+                strcat(assemblyCode, "\tsetg %al\n");
+        }
+        else // Should never happen
+        {
+            printf("Unknown operator %s\n", op);
+            return 1;
+        }
+    }
     free(op);
+    return error;
 }
 
-void codeGenerationVisitReturn(struct Node *node, char *assemblyCode)
+int codeGenerationVisitReturn(struct Node *node, char *assemblyCode)
 {
     // Visit child expression
-    codeGenerationVisit(node->children[0], assemblyCode);
+    int error = codeGenerationVisit(node->children[0], assemblyCode);
 
     strcat(assemblyCode, "\tret\n");
+    return error;
 }
 
-void codeGenerationVisitFunction(struct Node *node, char *assemblyCode)
+int codeGenerationVisitFunction(struct Node *node, char *assemblyCode)
 {
     char *func_name = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "funcName"));
     sprintf(assemblyCode, "%s%s:\n", assemblyCode, func_name);
     free(func_name);
 
     // Visit Function Body
-    codeGenerationVisit(node->children[0], assemblyCode);
+    return codeGenerationVisit(node->children[0], assemblyCode);
 }
 
-void codeGenerationVisitProgram(struct Node *node, char *assemblyCode)
+int codeGenerationVisitProgram(struct Node *node, char *assemblyCode)
 {
     strcat(assemblyCode, "\t.globl main\n");
 
     // Visit Function
-    codeGenerationVisit(node->children[0], assemblyCode);
+    return codeGenerationVisit(node->children[0], assemblyCode);
 }
 
-void codeGenerationVisitDown(struct Node *node, char *assemblyCode)
+int codeGenerationVisitDown(struct Node *node, char *assemblyCode)
 {
+    int error = 0;
     if (node->number_of_children != 0)
     {
         for (long i = 0; i < node->number_of_children; i++)
         {
-            codeGenerationVisit(node->children[i], assemblyCode);
+            error |= codeGenerationVisit(node->children[i], assemblyCode);
         }
     }
+    return error;
 }
 
-void codeGenerationVisit(struct Node *node, char *assemblyCode)
+int codeGenerationVisit(struct Node *node, char *assemblyCode)
 {
     switch (node->nodeType)
     {
     case PROGRAM:
-        codeGenerationVisitProgram(node, assemblyCode);
+        return codeGenerationVisitProgram(node, assemblyCode);
         break;
     case FUNCTION:
-        codeGenerationVisitFunction(node, assemblyCode);
+        return codeGenerationVisitFunction(node, assemblyCode);
         break;
     case RETURN:
-        codeGenerationVisitReturn(node, assemblyCode);
+        return codeGenerationVisitReturn(node, assemblyCode);
         break;
     case INT_LITERAL:
-        codeGenerationVisitIntLiteral(node, assemblyCode);
+        return codeGenerationVisitIntLiteral(node, assemblyCode);
         break;
     case UNARY_OP:
-        codeGenerationVisitUnaryOp(node, assemblyCode);
+        return codeGenerationVisitUnaryOp(node, assemblyCode);
         break;
     case BIN_OP:
-        codeGenerationVisitBinOp(node, assemblyCode);
+        return codeGenerationVisitBinOp(node, assemblyCode);
         break;
     default:
-        codeGenerationVisitDown(node, assemblyCode);
+        return codeGenerationVisitDown(node, assemblyCode);
         break;
     }
+
+    return 0;
 }
 
 char *codeGeneration(struct Ast *ast)
@@ -126,7 +208,8 @@ char *codeGeneration(struct Ast *ast)
     char *assemblyCode = malloc(BUFF_SIZE);
     strcpy(assemblyCode, "");
 
-    codeGenerationVisit(ast->program, assemblyCode);
+    if (codeGenerationVisit(ast->program, assemblyCode))
+        return NULL;
 
     return assemblyCode;
 }

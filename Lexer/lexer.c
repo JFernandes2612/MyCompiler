@@ -111,7 +111,7 @@ struct Token *lexTokenStateMachineAlpha(const char *input, long *input_string_po
     return token;
 }
 
-struct Token *lexTokenStateMachineSymbol(const char *input, long *input_string_pos, struct Pos *screen_pos, const char* target_symbol, const enum TokenType token_type, const int has_value)
+struct Token *lexTokenStateMachineSymbol(const char *input, long *input_string_pos, struct Pos *screen_pos, const char *target_symbol, const enum TokenType token_type, const int has_value)
 {
     struct Token *token = tokenFactory(ERROR_T, posCopy(screen_pos), NULL);
     int target_word_length = strlen(target_symbol);
@@ -140,7 +140,7 @@ struct Token *lexTokenStateMachineSymbols(const char *input, long *input_string_
 {
     struct Token *token = tokenFactory(ERROR_T, posCopy(screen_pos), NULL);
 
-    const char* target_symbols[19] = {"==", "!=", "<=", ">=", "&&", "||", "<", ">", "~", "!", "+", "-", "*", "/", ";", "(", ")", "{", "}"};
+    const char *target_symbols[19] = {"==", "!=", "<=", ">=", "&&", "||", "<", ">", "~", "!", "+", "-", "*", "/", ";", "(", ")", "{", "}"};
     const enum TokenType token_types[19] = {EQ_T, NEQ_T, LTE_T, GTE_T, AND_T, OR_T, LT_T, GT_T, NEG_T, LOG_NEG_T, PLUS_T, MINUS_T, TIMES_T, DIV_T, SEMICOLON_T, OPEN_PAREN_T, CLOSE_PAREN_T, OPEN_BRACE_T, CLOSE_BRACE_T};
     const int has_values[19] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0};
     int counter = 0;
@@ -152,7 +152,9 @@ struct Token *lexTokenStateMachineSymbols(const char *input, long *input_string_
         {
             freeToken(token);
             return new_token;
-        } else free(new_token);
+        }
+        else
+            free(new_token);
         counter++;
     }
 

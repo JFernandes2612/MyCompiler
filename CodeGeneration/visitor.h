@@ -3,21 +3,23 @@
 
 #include "../Parser/ast.h"
 
-void codeGenerationVisitIntLiteral(struct Node *node, char *assemblyCode);
+char *codeGenerationLabel();
 
-void codeGenerationVisitUnaryOp(struct Node *node, char *assemblyCode);
+int codeGenerationVisitIntLiteral(struct Node *node, char *assemblyCode);
 
-void codeGenerationVisitBinOp(struct Node *node, char *assemblyCode);
+int codeGenerationVisitUnaryOp(struct Node *node, char *assemblyCode);
 
-void codeGenerationVisitReturn(struct Node *node, char *assemblyCode);
+int codeGenerationVisitBinOp(struct Node *node, char *assemblyCode);
 
-void codeGenerationVisitFunction(struct Node *node, char *assemblyCode);
+int codeGenerationVisitReturn(struct Node *node, char *assemblyCode);
 
-void codeGenerationVisitProgram(struct Node *node, char *assemblyCode);
+int codeGenerationVisitFunction(struct Node *node, char *assemblyCode);
 
-void codeGenerationVisitDown(struct Node *node, char *assemblyCode);
+int codeGenerationVisitProgram(struct Node *node, char *assemblyCode);
 
-void codeGenerationVisit(struct Node *node, char *assemblyCode);
+int codeGenerationVisitDown(struct Node *node, char *assemblyCode);
+
+int codeGenerationVisit(struct Node *node, char *assemblyCode);
 
 char *codeGeneration(struct Ast *ast);
 

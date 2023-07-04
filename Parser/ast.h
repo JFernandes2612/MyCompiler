@@ -14,6 +14,10 @@ enum NodeType
     UNARY_OP,
     ADD_SUB_OP,
     MULT_DIV_OP,
+    RELAT_OP,
+    EQUALITY_OP,
+    AND_OP,
+    OR_OP,
     RETURN,
 
     INT_LITERAL,

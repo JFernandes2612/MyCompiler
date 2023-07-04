@@ -7,6 +7,10 @@ int voidRule(const struct Node *root)
     return root->nodeType == EXPRESSION ||
            root->nodeType == ADD_SUB_OP ||
            root->nodeType == MULT_DIV_OP ||
+           root->nodeType == RELAT_OP ||
+           root->nodeType == EQUALITY_OP ||
+           root->nodeType == AND_OP ||
+           root->nodeType == OR_OP ||
            ((root->nodeType == UNARY_OP || root->nodeType == BIN_OP) && root->data->number_of_entries == 0);
 }
 
@@ -165,7 +169,7 @@ int buildReturn(struct Node *root, struct Token **tokens, long *pos)
 
 int buildExpression(struct Node *root, struct Token **tokens, long *pos)
 {
-    if (testRule(root, tokens, pos, ADD_SUB_OP))
+    if (testRule(root, tokens, pos, OR_OP))
     {
         return -1;
     }
@@ -287,6 +291,22 @@ int buildRule(struct Node *root, struct Token **tokens, long *pos)
     case ADD_SUB_OP:
         const enum TokenType tokens_to_test_add_sub[2] = {PLUS_T, MINUS_T};
         return buildBinOp(root, tokens, pos, MULT_DIV_OP, tokens_to_test_add_sub, 2);
+        break;
+    case RELAT_OP:
+        const enum TokenType tokens_to_test_relat[4] = {GT_T, GTE_T, LT_T, LTE_T};
+        return buildBinOp(root, tokens, pos, ADD_SUB_OP, tokens_to_test_relat, 4);
+        break;
+    case EQUALITY_OP:
+        const enum TokenType tokens_to_test_equality[2] = {EQ_T, NEQ_T};
+        return buildBinOp(root, tokens, pos, RELAT_OP, tokens_to_test_equality, 2);
+        break;
+    case AND_OP:
+        const enum TokenType tokens_to_test_and[1] = {AND_T};
+        return buildBinOp(root, tokens, pos, EQUALITY_OP, tokens_to_test_and, 1);
+        break;
+    case OR_OP:
+        const enum TokenType tokens_to_test_or[1] = {OR_T};
+        return buildBinOp(root, tokens, pos, AND_OP, tokens_to_test_or, 1);
         break;
     default:
         break;
