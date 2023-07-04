@@ -140,12 +140,12 @@ struct Token *lexTokenStateMachineSymbols(const char *input, long *input_string_
 {
     struct Token *token = tokenFactory(ERROR_T, posCopy(screen_pos), NULL);
 
-    const char* target_symbols[20] = {"==", "!=", "<=", ">=", "&&", "||", "<", ">", "~", "!", "+", "-", "*", "/", ";", "(", ")", "{", "}", "\0"};
-    const enum TokenType token_types[20] = {EQ_T, NEQ_T, LTE_T, GTE_T, AND_T, OR_T, LT_T, GT_T, NEG_T, LOG_NEG_T, PLUS_T, MINUS_T, TIMES_T, DIV_T, SEMICOLON_T, OPEN_PAREN_T, CLOSE_PAREN_T, OPEN_BRACE_T, CLOSE_BRACE_T, EOF_T};
-    const int has_values[20] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0};
+    const char* target_symbols[19] = {"==", "!=", "<=", ">=", "&&", "||", "<", ">", "~", "!", "+", "-", "*", "/", ";", "(", ")", "{", "}"};
+    const enum TokenType token_types[19] = {EQ_T, NEQ_T, LTE_T, GTE_T, AND_T, OR_T, LT_T, GT_T, NEG_T, LOG_NEG_T, PLUS_T, MINUS_T, TIMES_T, DIV_T, SEMICOLON_T, OPEN_PAREN_T, CLOSE_PAREN_T, OPEN_BRACE_T, CLOSE_BRACE_T};
+    const int has_values[19] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0};
     int counter = 0;
 
-    while (token->token_type == ERROR_T && counter != 20)
+    while (token->token_type == ERROR_T && counter != 19)
     {
         struct Token *new_token = lexTokenStateMachineSymbol(input, input_string_pos, screen_pos, target_symbols[counter], token_types[counter], has_values[counter]);
         if (new_token->token_type != ERROR_T)
@@ -196,6 +196,11 @@ struct Token *lexTokenStateMachine(const char *input, long *input_string_pos, st
     {
         freeToken(token);
         token = lexTokenStateMachineAlpha(input, input_string_pos, screen_pos);
+    }
+    else if (c == '\0')
+    {
+        freeToken(token);
+        token = tokenFactory(EOF_T, posCopy(screen_pos), NULL);
     }
     else
     {
