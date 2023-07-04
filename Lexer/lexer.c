@@ -111,6 +111,54 @@ struct Token *lexTokenStateMachineAlpha(const char *input, long *input_string_po
     return token;
 }
 
+struct Token *lexTokenStateMachineSymbol(const char *input, long *input_string_pos, struct Pos *screen_pos, const char* target_symbol, const enum TokenType token_type, const int has_value)
+{
+    struct Token *token = tokenFactory(ERROR_T, posCopy(screen_pos), NULL);
+    int target_word_length = strlen(target_symbol);
+
+    char comparation_input[TOKEN_MAX_SIZE];
+    strncpy(comparation_input, input + (*input_string_pos), target_word_length);
+    comparation_input[target_word_length] = '\0';
+
+    if (strcmp(comparation_input, target_symbol) == 0)
+    {
+        freeToken(token);
+        char *value;
+        if (has_value)
+        {
+            value = malloc(strlen(target_symbol) + 1);
+            strcpy(value, target_symbol);
+        }
+        token = tokenFactory(token_type, posCopy(screen_pos), has_value ? arbitraryValueFactory(STRING, value) : NULL);
+        forward(input_string_pos, screen_pos, target_word_length);
+    }
+
+    return token;
+}
+
+struct Token *lexTokenStateMachineSymbols(const char *input, long *input_string_pos, struct Pos *screen_pos)
+{
+    struct Token *token = tokenFactory(ERROR_T, posCopy(screen_pos), NULL);
+
+    const char* target_symbols[20] = {"==", "!=", "<=", ">=", "&&", "||", "<", ">", "~", "!", "+", "-", "*", "/", ";", "(", ")", "{", "}", "\0"};
+    const enum TokenType token_types[20] = {EQ_T, NEQ_T, LTE_T, GTE_T, AND_T, OR_T, LT_T, GT_T, NEG_T, LOG_NEG_T, PLUS_T, MINUS_T, TIMES_T, DIV_T, SEMICOLON_T, OPEN_PAREN_T, CLOSE_PAREN_T, OPEN_BRACE_T, CLOSE_BRACE_T, EOF_T};
+    const int has_values[20] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0};
+    int counter = 0;
+
+    while (token->token_type == ERROR_T && counter != 20)
+    {
+        struct Token *new_token = lexTokenStateMachineSymbol(input, input_string_pos, screen_pos, target_symbols[counter], token_types[counter], has_values[counter]);
+        if (new_token->token_type != ERROR_T)
+        {
+            freeToken(token);
+            return new_token;
+        } else free(new_token);
+        counter++;
+    }
+
+    return token;
+}
+
 struct Token *lexTokenStateMachine(const char *input, long *input_string_pos, struct Pos *screen_pos)
 {
     struct Token *token = tokenFactory(ERROR_T, posCopy(screen_pos), NULL);
@@ -152,54 +200,7 @@ struct Token *lexTokenStateMachine(const char *input, long *input_string_pos, st
     else
     {
         freeToken(token);
-        char *buff = malloc(2);
-        sprintf(buff, "%c", c);
-        switch (c)
-        {
-        case '-':
-            token = tokenFactory(MINUS_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
-            break;
-        case '+':
-            token = tokenFactory(PLUS_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
-            break;
-        case '~':
-            token = tokenFactory(NEG_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
-            break;
-        case '!':
-            token = tokenFactory(LOG_NEG_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
-            break;
-        case '*':
-            token = tokenFactory(TIMES_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
-            break;
-        case '/':
-            token = tokenFactory(DIV_T, posCopy(screen_pos), arbitraryValueFactory(STRING, buff));
-            break;
-        default:
-            free(buff);
-        }
-
-        switch (c)
-        {
-        case '(':
-            token = tokenFactory(OPEN_PAREN_T, posCopy(screen_pos), NULL);
-            break;
-        case ')':
-            token = tokenFactory(CLOSE_PAREN_T, posCopy(screen_pos), NULL);
-            break;
-        case '{':
-            token = tokenFactory(OPEN_BRACE_T, posCopy(screen_pos), NULL);
-            break;
-        case '}':
-            token = tokenFactory(CLOSE_BRACE_T, posCopy(screen_pos), NULL);
-            break;
-        case ';':
-            token = tokenFactory(SEMICOLON_T, posCopy(screen_pos), NULL);
-            break;
-        case '\0':
-            token = tokenFactory(EOF_T, posCopy(screen_pos), NULL);
-            break;
-        }
-        forward(input_string_pos, screen_pos, 1);
+        token = lexTokenStateMachineSymbols(input, input_string_pos, screen_pos);
     }
 
     return token;
@@ -230,7 +231,7 @@ struct Token **lex(const char *input)
 
         if (token->token_type == ERROR_T)
         {
-            printf("Unexpected token '%c' at %s\n", input[input_string_pos - 1], posToString(screen_pos));
+            printf("Unexpected token '%c' at %s\n", input[input_string_pos], posToString(screen_pos));
             free(screen_pos);
             return NULL;
         }

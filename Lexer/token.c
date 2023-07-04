@@ -57,6 +57,30 @@ char *tokenToString(const struct Token *token)
     case EOF_T: // EOF
         strcpy(token_string, "EOF");
         break;
+    case AND_T: // AND
+        strcpy(token_string, "AND");
+        break;
+    case OR_T: // OR
+        strcpy(token_string, "OR");
+        break;
+    case EQ_T: // EQ
+        strcpy(token_string, "EQ");
+        break;
+    case NEQ_T: // NEQ
+        strcpy(token_string, "NEQ");
+        break;
+    case LT_T: // LT
+        strcpy(token_string, "LT");
+        break;
+    case LTE_T: // LTE
+        strcpy(token_string, "LTE");
+        break;
+    case GT_T: // GT
+        strcpy(token_string, "GT");
+        break;
+    case GTE_T: // GTE
+        strcpy(token_string, "GTE");
+        break;
     default:
         return "";
         break;

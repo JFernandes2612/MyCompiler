@@ -15,6 +15,10 @@ struct Token *lexTokenStateMachineAlphaIntKeyword(const char *input, long *input
 
 struct Token *lexTokenStateMachineAlphaReturnKeyword(const char *input, long *input_string_pos, struct Pos *screen_pos, char *value, long *counter);
 
+struct Token *lexTokenStateMachineSymbol(const char *input, long *input_string_pos, struct Pos *screen_pos, const char* target_symbol, const enum TokenType token_type, const int has_value);
+
+struct Token *lexTokenStateMachineSymbols(const char *input, long *input_string_pos, struct Pos *screen_pos);
+
 struct Token *lexTokenStateMachineAlpha(const char *input, long *input_string_pos, struct Pos *screen_pos);
 
 struct Token *lexTokenStateMachine(const char *input, long *input_string_pos, struct Pos *screen_pos);
