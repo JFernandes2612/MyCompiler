@@ -25,7 +25,11 @@ In very early development. Only simple operations fully implemented in the curre
 <function> ::= 'int' [_a-zA-Z]([_a-zA-Z0-9])* '(' ')' '{' <body> '}'
 <body> ::= <return>
 <return> ::= 'return' <expression> ';'
-<expression> ::= <addsubop>
+<expression> ::= <orop>
+<orop> ::= <andop> ( '||' <andop> )*
+<andop> ::= <equaliyop> ( '&&' <equaliyop> )*
+<equaliyop> ::= <relationop> ( ( '==' | '!=' ) <relationop> )*
+<relationop> ::= <addsubop> ( ( '>' | '<' | '<=' | '>=' ) <addsubop> )*
 <addsubop> ::= <multdivop> ( ( '+' | '-' ) <multdivop> )*
 <multdivop> ::= <unaryop> ( ( '*' | '/' ) <unaryop> )*
 <unaryop> ::= ( ( '~' | '!' | '-' ) <unaryop> ) | ( '(' <expression> ')' ) | ([0-9])*
