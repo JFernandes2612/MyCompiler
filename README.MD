@@ -27,11 +27,15 @@ In very early development. Only simple operations fully implemented in the curre
 <return> ::= 'return' <expression> ';'
 <expression> ::= <orop>
 <orop> ::= <andop> ( '||' <andop> )*
-<andop> ::= <equaliyop> ( '&&' <equaliyop> )*
+<andop> ::= <borop> ( '&&' <borop> )*
+<borop> ::= <bandop> ( '|' <bandop> )*
+<bandop> ::= <bxorop> ( '&' <bxorop> )*
+<bxorop> ::= <equaliyop> ( '^' <equaliyop> )*
 <equaliyop> ::= <relationop> ( ( '==' | '!=' ) <relationop> )*
-<relationop> ::= <addsubop> ( ( '>' | '<' | '<=' | '>=' ) <addsubop> )*
-<addsubop> ::= <multdivop> ( ( '+' | '-' ) <multdivop> )*
-<multdivop> ::= <unaryop> ( ( '*' | '/' ) <unaryop> )*
+<relationop> ::= <shiftop> ( ( '>' | '<' | '<=' | '>=' ) <shiftop> )*
+<shiftop> ::= <addsubop> ( ( '<<' | '>>' ) <addsubop> )* 
+<addsubop> ::= <multdivmodop> ( ( '+' | '-' ) <multdivmodop> )*
+<multdivmodop> ::= <unaryop> ( ( '*' | '/' | '%' ) <unaryop> )*
 <unaryop> ::= ( ( '~' | '!' | '-' ) <unaryop> ) | ( '(' <expression> ')' ) | ([0-9])*
 ```
 
