@@ -6,11 +6,15 @@ int voidRule(const struct Node *root)
 {
     return root->nodeType == EXPRESSION ||
            root->nodeType == ADD_SUB_OP ||
-           root->nodeType == MULT_DIV_OP ||
+           root->nodeType == MULT_DIV_MOD_OP ||
            root->nodeType == RELAT_OP ||
            root->nodeType == EQUALITY_OP ||
+           root->nodeType == BAND_OP ||
+           root->nodeType == BOR_OP ||
+           root->nodeType == BXOR_OP ||
            root->nodeType == AND_OP ||
            root->nodeType == OR_OP ||
+           root->nodeType == SHIFT_OP ||
            ((root->nodeType == UNARY_OP || root->nodeType == BIN_OP) && root->data->number_of_entries == 0);
 }
 
@@ -284,25 +288,41 @@ int buildRule(struct Node *root, struct Token **tokens, long *pos)
     case UNARY_OP:
         return buildUnaryOp(root, tokens, pos);
         break;
-    case MULT_DIV_OP:
-        const enum TokenType tokens_to_test_mult_div[2] = {TIMES_T, DIV_T};
-        return buildBinOp(root, tokens, pos, UNARY_OP, tokens_to_test_mult_div, 2);
+    case MULT_DIV_MOD_OP:
+        const enum TokenType tokens_to_test_mult_div_mod[3] = {TIMES_T, DIV_T, MODULO_T};
+        return buildBinOp(root, tokens, pos, UNARY_OP, tokens_to_test_mult_div_mod, 3);
         break;
     case ADD_SUB_OP:
         const enum TokenType tokens_to_test_add_sub[2] = {PLUS_T, MINUS_T};
-        return buildBinOp(root, tokens, pos, MULT_DIV_OP, tokens_to_test_add_sub, 2);
+        return buildBinOp(root, tokens, pos, MULT_DIV_MOD_OP, tokens_to_test_add_sub, 2);
+        break;
+    case SHIFT_OP:
+        const enum TokenType tokens_to_test_shift[2] = {BSL_T, BSR_T};
+        return buildBinOp(root, tokens, pos, ADD_SUB_OP, tokens_to_test_shift, 2);
         break;
     case RELAT_OP:
         const enum TokenType tokens_to_test_relat[4] = {GT_T, GTE_T, LT_T, LTE_T};
-        return buildBinOp(root, tokens, pos, ADD_SUB_OP, tokens_to_test_relat, 4);
+        return buildBinOp(root, tokens, pos, SHIFT_OP, tokens_to_test_relat, 4);
         break;
     case EQUALITY_OP:
         const enum TokenType tokens_to_test_equality[2] = {EQ_T, NEQ_T};
         return buildBinOp(root, tokens, pos, RELAT_OP, tokens_to_test_equality, 2);
         break;
+    case BAND_OP:
+        const enum TokenType tokens_to_test_band[1] = {BAND_T};
+        return buildBinOp(root, tokens, pos, EQUALITY_OP, tokens_to_test_band, 1);
+        break;
+    case BXOR_OP:
+        const enum TokenType tokens_to_test_bxor[1] = {BXOR_T};
+        return buildBinOp(root, tokens, pos, BAND_OP, tokens_to_test_bxor, 1);
+        break;
+    case BOR_OP:
+        const enum TokenType tokens_to_test_bor[1] = {BOR_T};
+        return buildBinOp(root, tokens, pos, BXOR_OP, tokens_to_test_bor, 1);
+        break;    
     case AND_OP:
         const enum TokenType tokens_to_test_and[1] = {AND_T};
-        return buildBinOp(root, tokens, pos, EQUALITY_OP, tokens_to_test_and, 1);
+        return buildBinOp(root, tokens, pos, BOR_OP, tokens_to_test_and, 1);
         break;
     case OR_OP:
         const enum TokenType tokens_to_test_or[1] = {OR_T};

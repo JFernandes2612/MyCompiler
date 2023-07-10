@@ -24,6 +24,12 @@ enum TokenType
     LTE_T,
     GT_T,
     GTE_T,
+    BOR_T,
+    BAND_T,
+    BXOR_T,
+    BSL_T,
+    BSR_T,
+    MODULO_T,
 
     INT_KEYWORD_T,
     RETURN_KEYWORD_T,
@@ -61,14 +67,16 @@ struct Symbol
     int has_value;
 };
 
-static const int symbols_to_match_size = 19;
-static const struct Symbol const symbols_to_match[19] =
+static const int symbols_to_match_size = 25;
+static const struct Symbol const symbols_to_match[25] =
     {{"==", EQ_T, 1},
      {"!=", NEQ_T, 1},
      {"<=", LTE_T, 1},
      {">=", GTE_T, 1},
      {"&&", AND_T, 1},
      {"||", OR_T, 1},
+     {"<<", BSL_T, 1},
+     {">>", BSR_T, 1},
      {"<", LT_T, 1},
      {">", GT_T, 1},
      {"~", NEG_T, 1},
@@ -81,6 +89,11 @@ static const struct Symbol const symbols_to_match[19] =
      {"(", OPEN_PAREN_T, 0},
      {")", CLOSE_PAREN_T, 0},
      {"{", OPEN_BRACE_T, 0},
-     {"}", CLOSE_BRACE_T, 0}};
+     {"}", CLOSE_BRACE_T, 0},
+     {"&", BAND_T, 1},
+     {"|", BOR_T, 1},
+     {"^", BXOR_T, 1},
+     {"%", MODULO_T, 1}};
+
 
 #endif

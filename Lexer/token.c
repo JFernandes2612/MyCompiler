@@ -81,6 +81,24 @@ char *tokenToString(const struct Token *token)
     case GTE_T: // GTE
         strcpy(token_string, "GTE");
         break;
+    case BOR_T:
+        strcpy(token_string, "BOR");
+        break;
+    case BAND_T:
+        strcpy(token_string, "BAND");
+        break;
+    case BXOR_T:
+        strcpy(token_string, "BXOR");
+        break;
+    case BSL_T:
+        strcpy(token_string, "BSL");
+        break;
+    case BSR_T:
+        strcpy(token_string, "BSR");
+        break;
+    case MODULO_T:
+        strcpy(token_string, "MODULO");
+        break;
     default:
         return "";
         break;

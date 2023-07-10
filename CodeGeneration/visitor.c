@@ -106,6 +106,18 @@ int codeGenerationVisitBinOp(struct Node *node, char *assemblyCode)
             strcat(assemblyCode, "\timul %ecx, %eax\n");
         else if (strcmp(op, "/") == 0)
             strcat(assemblyCode, "\txorl %edx, %edx\n\tpush %rax\n\tmovl %ecx, %eax\n\tpop %rcx\n\tidivl %ecx\n");
+        else if (strcmp(op, "|") == 0)
+            strcat(assemblyCode, "\torl %ecx, %eax\n");
+        else if (strcmp(op, "&") == 0)
+            strcat(assemblyCode, "\tandl %ecx, %eax\n");
+        else if (strcmp(op, "^") == 0)
+            strcat(assemblyCode, "\txorl %ecx, %eax\n");
+        else if (strcmp(op, "<<") == 0)
+            strcat(assemblyCode, "\txchg %ecx, %eax\n\tshll %ecx, %eax\n");
+        else if (strcmp(op, ">>") == 0)
+            strcat(assemblyCode, "\txchg %ecx, %eax\n\tshrl %ecx, %eax\n");
+        else if (strcmp(op, "%") == 0)
+            strcat(assemblyCode, "\txorl %edx, %edx\n\tpush %rax\n\tmovl %ecx, %eax\n\tpop %rcx\n\tidivl %ecx\n\tmovl %edx, %eax\n");
         else if (strcmp(op, "==") == 0 || strcmp(op, "!=") == 0 || strcmp(op, "<=") == 0 || strcmp(op, ">=") == 0 || strcmp(op, "<") == 0 || strcmp(op, ">") == 0)
         {
             strcat(assemblyCode, "\tcmpl %eax, %ecx\n\tmovl $0, %eax\n");
