@@ -151,7 +151,7 @@ struct Token *lexTokenStateMachineSymbols(const char *input, long *input_string_
             return new_token;
         }
         else
-            free(new_token);
+            freeToken(new_token);
         counter++;
     }
 
