@@ -10,13 +10,11 @@ struct Token *lexTokenStateMachineDigit(const char *input, long *input_string_po
     char c = input[*input_string_pos];
     int *value = malloc(sizeof(int));
     (*value) = 0;
-    long mult = 1;
 
     while (isdigit(c))
     {
-        (*value) *= mult;
+        (*value) *= 10;
         (*value) += (int)(c - 48);
-        mult *= 10;
 
         forward(input_string_pos, screen_pos, 1);
         c = input[*input_string_pos];
