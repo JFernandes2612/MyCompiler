@@ -233,8 +233,11 @@ struct Token **lex(const char *input)
 
         if (token->token_type == ERROR_T)
         {
-            printf("Unexpected token '%c' at %s\n", input[input_string_pos], posToString(screen_pos));
+            char* pos_in_str = posToString(screen_pos);
+            printf("Unexpected token '%c' at %s\n", input[input_string_pos], pos_in_str);
+            free(pos_in_str);
             free(screen_pos);
+            freeTokensWithCounter(tokens, current_token+1);
             return NULL;
         }
 

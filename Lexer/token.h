@@ -60,6 +60,8 @@ void freeToken(struct Token *token);
 
 void freeTokens(struct Token **tokens);
 
+void freeTokensWithCounter(struct Token **tokens, const int counter);
+
 struct Symbol
 {
     const char *str;

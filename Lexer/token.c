@@ -188,3 +188,11 @@ void freeTokens(struct Token **tokens)
     freeToken(tokens[counter]);
     free(tokens);
 }
+
+void freeTokensWithCounter(struct Token **tokens, const int counter)
+{
+    for (int i = 0; i < counter; i++) {
+        freeToken(tokens[i]);
+    }
+    free(tokens);
+}

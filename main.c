@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
     if ((tokens = lex(input)) == NULL)
     {
         printf("Error tokenizing input\n");
+        free(input);
         return -1;
     }
 
@@ -47,6 +48,8 @@ int main(int argc, char *argv[])
     if ((ast = parse(tokens)) == NULL)
     {
         printf("Error parsing input\n");
+        freeTokens(tokens);
+        free(input);
         return -1;
     }
 
@@ -57,6 +60,9 @@ int main(int argc, char *argv[])
     if (analyze(ast))
     {
         printf("Error in syntatic analysis\n");
+        freeAst(ast);
+        freeTokens(tokens);
+        free(input);
         return -1;
     }
     printf("\n\n");
@@ -65,6 +71,9 @@ int main(int argc, char *argv[])
     if ((assemblyCode = codeGeneration(ast)) == NULL)
     {
         printf("Error in code generation\n");
+        freeAst(ast);
+        freeTokens(tokens);
+        free(input);
         return -1;
     }
 

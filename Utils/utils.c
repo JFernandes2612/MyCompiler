@@ -16,6 +16,7 @@ char *readFile(const char *path)
     if (fseek(f, 0, SEEK_END) != 0)
     {
         printf("Error seeking end of file.\n");
+        fclose(f);
         return NULL;
     }
 
@@ -23,6 +24,7 @@ char *readFile(const char *path)
     if ((file_size = ftell(f)) <= 0)
     {
         printf("Error file is empty or invalid.\n");
+        fclose(f);
         return NULL;
     }
     // Include /0 in string
@@ -31,6 +33,7 @@ char *readFile(const char *path)
     if (fseek(f, 0, SEEK_SET) != 0)
     {
         printf("Error seeking start of file.\n");
+        fclose(f);
         return NULL;
     }
 
@@ -39,6 +42,8 @@ char *readFile(const char *path)
     if ((ret = malloc(file_size)) == NULL)
     {
         printf("Error unable to malloc memory of size %ld\n", file_size);
+        free(ret);
+        fclose(f);
         return NULL;
     }
     ret[file_size - 1] = '\0';
@@ -48,6 +53,7 @@ char *readFile(const char *path)
     if (fclose(f))
     {
         printf("Error unable to close file\n");
+        free(ret);
         return NULL;
     }
 

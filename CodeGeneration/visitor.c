@@ -221,7 +221,10 @@ char *codeGeneration(struct Ast *ast)
     strcpy(assemblyCode, "");
 
     if (codeGenerationVisit(ast->program, assemblyCode))
+    {
+        free(assemblyCode);
         return NULL;
+    }
 
     return assemblyCode;
 }

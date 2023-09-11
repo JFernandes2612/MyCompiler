@@ -49,7 +49,15 @@ int testToken(struct Token **tokens, long *pos, const enum TokenType token_type,
     if (token->token_type != token_type)
     {
         if (error)
-            printf("Expected '%s' found '%s'\n", tokenToString(tokenFactory(token_type, NULL, NULL)), tokenToString(token));
+        {
+            struct Token* token_expected = tokenFactory(token_type, NULL, NULL);
+            char* token_string_expected = tokenToString(token_expected);
+            char* token_string_found = tokenToString(token);
+            printf("Expected '%s' found '%s'\n", token_string_expected, token_string_found);
+            free(token_string_expected);
+            free(token_string_found);
+            freeToken(token_expected);
+        }
         return -1;
     }
 
@@ -344,6 +352,7 @@ struct Ast *parse(struct Token **tokens)
 
     if (buildRule(ast->program, tokens, &pos))
     {
+        freeAst(ast);
         return NULL;
     }
 
