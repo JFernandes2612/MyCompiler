@@ -10,6 +10,9 @@ enum NodeType
     FUNCTION,
     BODY,
     EXPRESSION,
+    STATEMENT,
+    DECLARATION,
+    IDENTIFIER,
     BIN_OP,
     UNARY_OP,
     ADD_SUB_OP,
@@ -23,6 +26,7 @@ enum NodeType
     AND_OP,
     OR_OP,
     RETURN,
+    
 
     INT_LITERAL,
 };

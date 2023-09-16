@@ -5,6 +5,7 @@
 int voidRule(const struct Node *root)
 {
     return root->nodeType == EXPRESSION ||
+           root->nodeType == STATEMENT ||
            root->nodeType == ADD_SUB_OP ||
            root->nodeType == MULT_DIV_MOD_OP ||
            root->nodeType == RELAT_OP ||
@@ -151,7 +152,53 @@ int buildFunction(struct Node *root, struct Token **tokens, long *pos)
 
 int buildBody(struct Node *root, struct Token **tokens, long *pos)
 {
+    while (1) 
+    {
+        if (testRule(root, tokens, pos, STATEMENT))
+            break;
+    }
+
     if (testRule(root, tokens, pos, RETURN))
+    {
+        return -1;
+    }
+
+    return 0;
+}
+
+int buildDeclaration(struct Node *root, struct Token **tokens, long *pos)
+{
+    if (testToken(tokens, pos, INT_KEYWORD_T, 0))
+    {
+        return -1;
+    }
+
+    if (testRule(root, tokens, pos, IDENTIFIER)) 
+    {
+        return -1;
+    }
+
+    if (testToken(tokens, pos, ATT_T, 0) == 0)
+    {
+        if (testRule(root, tokens, pos, EXPRESSION))
+        {
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+int buildStatement(struct Node *root, struct Token **tokens, long *pos)
+{
+    const enum NodeType node_types[1] = {DECLARATION};
+
+    if (testAnyRules(root, tokens, pos, node_types, 1))
+    {
+        return -1;
+    }
+
+    if (testToken(tokens, pos, SEMICOLON_T, 1))
     {
         return -1;
     }
@@ -242,7 +289,9 @@ int buildUnaryOp(struct Node *root, struct Token **tokens, long *pos)
             return 0;
         }
 
-        if (testRule(root, tokens, pos, INT_LITERAL))
+        const enum NodeType node_types_to_test[2] = {INT_LITERAL, IDENTIFIER};
+
+        if (testAnyRules(root, tokens, pos, node_types_to_test, 2))
         {
             return -1;
         }
@@ -271,6 +320,18 @@ int buildIntLiteral(struct Node *root, struct Token **tokens, long *pos)
     return 0;
 }
 
+int buildIdentifier(struct Node *root, struct Token **tokens, long *pos)
+{
+    if (testToken(tokens, pos, IDENTIFIER_T, 1))
+    {
+        return -1;
+    }
+
+    nodePutPreviousToken(root, tokens, pos, "id");
+
+    return 0;
+}
+
 int buildRule(struct Node *root, struct Token **tokens, long *pos)
 {
     switch (root->nodeType)
@@ -284,11 +345,20 @@ int buildRule(struct Node *root, struct Token **tokens, long *pos)
     case BODY:
         return buildBody(root, tokens, pos);
         break;
+    case DECLARATION:
+        return buildDeclaration(root, tokens, pos);
+        break;
+    case STATEMENT:
+        return buildStatement(root, tokens, pos);
+        break;
     case RETURN:
         return buildReturn(root, tokens, pos);
         break;
     case INT_LITERAL:
         return buildIntLiteral(root, tokens, pos);
+        break;
+    case IDENTIFIER:
+        return buildIdentifier(root, tokens, pos);
         break;
     case EXPRESSION:
         return buildExpression(root, tokens, pos);

@@ -42,6 +42,12 @@ char *nodeToString(const struct Node *node)
     case BIN_OP:
         strcpy(node_string, "BIN_OP");
         break;
+    case DECLARATION:
+        strcpy(node_string, "DECLARATION");
+        break;
+    case IDENTIFIER:
+        strcpy(node_string, "IDENTIFIER");
+        break;
     default:
         return "";
     }

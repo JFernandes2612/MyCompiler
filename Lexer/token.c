@@ -99,6 +99,9 @@ char *tokenToString(const struct Token *token)
     case MODULO_T:
         strcpy(token_string, "MODULO");
         break;
+    case ATT_T:
+        strcpy(token_string, "ATT");
+        break;
     default:
         return "";
         break;
