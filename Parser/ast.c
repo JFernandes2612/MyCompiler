@@ -45,6 +45,9 @@ char *nodeToString(const struct Node *node)
     case DECLARATION:
         strcpy(node_string, "DECLARATION");
         break;
+    case ATTRIBUTION:
+        strcpy(node_string, "ATTRIBUTION");
+        break;
     case IDENTIFIER:
         strcpy(node_string, "IDENTIFIER");
         break;

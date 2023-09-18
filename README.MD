@@ -23,7 +23,9 @@ In very early development. Only simple operations fully implemented in the curre
 ```html
 <program> ::= <function> '\0'
 <function> ::= 'int' [_a-zA-Z]([_a-zA-Z0-9])* '(' ')' '{' <body> '}'
-<body> ::= <return>
+<body> ::= <statement>* <return>
+<statement> ::= int [_a-zA-Z]([_a-zA-Z0-9])* [ '=' <expression> ]
+              | [_a-zA-Z]([_a-zA-Z0-9])* '=' <expression> 
 <return> ::= 'return' <expression> ';'
 <expression> ::= <orop>
 <orop> ::= <andop> ( '||' <andop> )*
@@ -36,7 +38,10 @@ In very early development. Only simple operations fully implemented in the curre
 <shiftop> ::= <addsubop> ( ( '<<' | '>>' ) <addsubop> )* 
 <addsubop> ::= <multdivmodop> ( ( '+' | '-' ) <multdivmodop> )*
 <multdivmodop> ::= <unaryop> ( ( '*' | '/' | '%' ) <unaryop> )*
-<unaryop> ::= ( ( '~' | '!' | '-' ) <unaryop> ) | ( '(' <expression> ')' ) | ([0-9])*
+<unaryop> ::= ( '~' | '!' | '-' ) <unaryop>  
+            | '(' <expression> ')'  
+            | ([0-9])* 
+            | [_a-zA-Z]([_a-zA-Z0-9])*
 ```
 
 ### Semantic Rules

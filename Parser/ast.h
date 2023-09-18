@@ -12,6 +12,7 @@ enum NodeType
     EXPRESSION,
     STATEMENT,
     DECLARATION,
+    ATTRIBUTION,
     IDENTIFIER,
     BIN_OP,
     UNARY_OP,

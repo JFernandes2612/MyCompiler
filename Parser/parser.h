@@ -26,6 +26,8 @@ int buildBody(struct Node *root, struct Token **tokens, long *pos);
 
 int buildDeclaration(struct Node *root, struct Token **tokens, long *pos);
 
+int buildAttribution(struct Node *root, struct Token **tokens, long *pos);
+
 int buildStatement(struct Node *root, struct Token **tokens, long *pos);
 
 int buildReturn(struct Node *root, struct Token **tokens, long *pos);

@@ -173,10 +173,12 @@ int buildDeclaration(struct Node *root, struct Token **tokens, long *pos)
         return -1;
     }
 
-    if (testRule(root, tokens, pos, IDENTIFIER)) 
+    if (testToken(tokens, pos, IDENTIFIER_T, 1)) 
     {
         return -1;
     }
+
+    nodePutPreviousToken(root, tokens, pos, "id");
 
     if (testToken(tokens, pos, ATT_T, 0) == 0)
     {
@@ -189,11 +191,33 @@ int buildDeclaration(struct Node *root, struct Token **tokens, long *pos)
     return 0;
 }
 
+int buildAttribution(struct Node *root, struct Token **tokens, long *pos)
+{
+    if (testToken(tokens, pos, IDENTIFIER_T, 1)) 
+    {
+        return -1;
+    }
+
+    nodePutPreviousToken(root, tokens, pos, "id");
+
+    if (testToken(tokens, pos, ATT_T, 1))
+    {
+        return -1;
+    }
+
+    if (testRule(root, tokens, pos, EXPRESSION))
+    {
+        return -1;
+    }
+
+    return 0;
+}
+
 int buildStatement(struct Node *root, struct Token **tokens, long *pos)
 {
-    const enum NodeType node_types[1] = {DECLARATION};
+    const enum NodeType node_types[2] = {DECLARATION, ATTRIBUTION};
 
-    if (testAnyRules(root, tokens, pos, node_types, 1))
+    if (testAnyRules(root, tokens, pos, node_types, 2))
     {
         return -1;
     }
@@ -347,6 +371,9 @@ int buildRule(struct Node *root, struct Token **tokens, long *pos)
         break;
     case DECLARATION:
         return buildDeclaration(root, tokens, pos);
+        break;
+    case ATTRIBUTION:
+        return buildAttribution(root, tokens, pos);
         break;
     case STATEMENT:
         return buildStatement(root, tokens, pos);
