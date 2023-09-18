@@ -7,11 +7,17 @@ char *codeGenerationLabel();
 
 int codeGenerationVisitIntLiteral(struct Node *node, char *assemblyCode);
 
+int codeGenerationVisitIdentifier(struct Node *node, char *assemblyCode);
+
 int codeGenerationVisitUnaryOp(struct Node *node, char *assemblyCode);
 
 int codeGenerationVisitBinOp(struct Node *node, char *assemblyCode);
 
 int codeGenerationVisitReturn(struct Node *node, char *assemblyCode);
+
+int codeGenerationVisitAttribution(struct Node *node, char *assemblyCode);
+
+int codeGenerationVisitDeclaration(struct Node *node, char *assemblyCode);
 
 int codeGenerationVisitFunction(struct Node *node, char *assemblyCode);
 

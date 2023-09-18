@@ -26,6 +26,14 @@ int codeGenerationVisitIntLiteral(struct Node *node, char *assemblyCode)
     return 0;
 }
 
+
+int codeGenerationVisitIdentifier(struct Node *node, char *assemblyCode)
+{
+    strcat(assemblyCode, "\tmov -8(%rbp), %eax\n");
+
+    return 0;
+}
+
 int codeGenerationVisitUnaryOp(struct Node *node, char *assemblyCode)
 {
     int error = codeGenerationVisit(node->children[0], assemblyCode);
@@ -150,6 +158,9 @@ int codeGenerationVisitReturn(struct Node *node, char *assemblyCode)
     // Visit child expression
     int error = codeGenerationVisit(node->children[0], assemblyCode);
 
+    strcat(assemblyCode, "\tmov %rbp, %rsp\n");
+    strcat(assemblyCode, "\tpop %rbp\n");
+
     strcat(assemblyCode, "\tret\n");
     return error;
 }
@@ -160,8 +171,29 @@ int codeGenerationVisitFunction(struct Node *node, char *assemblyCode)
     sprintf(assemblyCode, "%s%s:\n", assemblyCode, func_name);
     free(func_name);
 
+    strcat(assemblyCode, "\tpush %rbp\n");
+    strcat(assemblyCode, "\tmov %rsp, %rbp\n");
+
     // Visit Function Body
     return codeGenerationVisit(node->children[0], assemblyCode);
+}
+
+int codeGenerationVisitAttribution(struct Node *node, char *assemblyCode)
+{
+    int error = codeGenerationVisit(node->children[0], assemblyCode);
+
+    strcat(assemblyCode, "\tmov %eax, -8(%rbp)\n");
+
+    return 0;
+}
+
+int codeGenerationVisitDeclaration(struct Node *node, char *assemblyCode)
+{
+    if (node->number_of_children == 1) {
+        return codeGenerationVisitAttribution(node, assemblyCode); 
+    }
+    
+    return 0;
 }
 
 int codeGenerationVisitProgram(struct Node *node, char *assemblyCode)
@@ -195,6 +227,12 @@ int codeGenerationVisit(struct Node *node, char *assemblyCode)
     case FUNCTION:
         return codeGenerationVisitFunction(node, assemblyCode);
         break;
+    case DECLARATION:
+        return codeGenerationVisitDeclaration(node, assemblyCode);
+        break;
+    case ATTRIBUTION:
+        return codeGenerationVisitAttribution(node, assemblyCode);
+        break;
     case RETURN:
         return codeGenerationVisitReturn(node, assemblyCode);
         break;
@@ -206,6 +244,9 @@ int codeGenerationVisit(struct Node *node, char *assemblyCode)
         break;
     case BIN_OP:
         return codeGenerationVisitBinOp(node, assemblyCode);
+        break;
+    case IDENTIFIER:
+        return codeGenerationVisitIdentifier(node, assemblyCode);
         break;
     default:
         return codeGenerationVisitDown(node, assemblyCode);
