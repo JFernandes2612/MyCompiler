@@ -193,7 +193,7 @@ int buildDeclaration(struct Node *root, struct Token **tokens, long *pos)
 
 int buildAttribution(struct Node *root, struct Token **tokens, long *pos)
 {
-    if (testToken(tokens, pos, IDENTIFIER_T, 1))
+    if (testToken(tokens, pos, IDENTIFIER_T, 0))
     {
         return -1;
     }
