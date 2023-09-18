@@ -26,7 +26,6 @@ int codeGenerationVisitIntLiteral(struct Node *node, char *assemblyCode)
     return 0;
 }
 
-
 int codeGenerationVisitIdentifier(struct Node *node, char *assemblyCode)
 {
     strcat(assemblyCode, "\tmov -8(%rbp), %eax\n");
@@ -189,10 +188,11 @@ int codeGenerationVisitAttribution(struct Node *node, char *assemblyCode)
 
 int codeGenerationVisitDeclaration(struct Node *node, char *assemblyCode)
 {
-    if (node->number_of_children == 1) {
-        return codeGenerationVisitAttribution(node, assemblyCode); 
+    if (node->number_of_children == 1)
+    {
+        return codeGenerationVisitAttribution(node, assemblyCode);
     }
-    
+
     return 0;
 }
 

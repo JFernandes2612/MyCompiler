@@ -51,9 +51,9 @@ int testToken(struct Token **tokens, long *pos, const enum TokenType token_type,
     {
         if (error)
         {
-            struct Token* token_expected = tokenFactory(token_type, NULL, NULL);
-            char* token_string_expected = tokenToString(token_expected);
-            char* token_string_found = tokenToString(token);
+            struct Token *token_expected = tokenFactory(token_type, NULL, NULL);
+            char *token_string_expected = tokenToString(token_expected);
+            char *token_string_found = tokenToString(token);
             printf("Expected '%s' found '%s'\n", token_string_expected, token_string_found);
             free(token_string_expected);
             free(token_string_found);
@@ -152,7 +152,7 @@ int buildFunction(struct Node *root, struct Token **tokens, long *pos)
 
 int buildBody(struct Node *root, struct Token **tokens, long *pos)
 {
-    while (1) 
+    while (1)
     {
         if (testRule(root, tokens, pos, STATEMENT))
             break;
@@ -173,7 +173,7 @@ int buildDeclaration(struct Node *root, struct Token **tokens, long *pos)
         return -1;
     }
 
-    if (testToken(tokens, pos, IDENTIFIER_T, 1)) 
+    if (testToken(tokens, pos, IDENTIFIER_T, 1))
     {
         return -1;
     }
@@ -193,7 +193,7 @@ int buildDeclaration(struct Node *root, struct Token **tokens, long *pos)
 
 int buildAttribution(struct Node *root, struct Token **tokens, long *pos)
 {
-    if (testToken(tokens, pos, IDENTIFIER_T, 1)) 
+    if (testToken(tokens, pos, IDENTIFIER_T, 1))
     {
         return -1;
     }
@@ -424,7 +424,7 @@ int buildRule(struct Node *root, struct Token **tokens, long *pos)
     case BOR_OP:
         const enum TokenType tokens_to_test_bor[1] = {BOR_T};
         return buildBinOp(root, tokens, pos, BXOR_OP, tokens_to_test_bor, 1);
-        break;    
+        break;
     case AND_OP:
         const enum TokenType tokens_to_test_and[1] = {AND_T};
         return buildBinOp(root, tokens, pos, BOR_OP, tokens_to_test_and, 1);
