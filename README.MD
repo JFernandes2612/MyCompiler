@@ -23,9 +23,10 @@ In very early development. Only simple operations fully implemented in the curre
 ```html
 <program> ::= <function> '\0'
 <function> ::= 'int' [_a-zA-Z]([_a-zA-Z0-9])* '(' ')' '{' <body> '}'
-<body> ::= <statement>* <return>
-<statement> ::= int [_a-zA-Z]([_a-zA-Z0-9])* [ '=' <expression> ]
-              | [_a-zA-Z]([_a-zA-Z0-9])* '=' <expression> 
+<body> ::= <statement>*  <return>
+<statement> ::= <declaration> | <attribution> ';'
+<declaration> ::= int [_a-zA-Z]([_a-zA-Z0-9])* [ '=' <expression> ]
+<attribution> ::= [_a-zA-Z]([_a-zA-Z0-9])* '=' <expression> 
 <return> ::= 'return' <expression> ';'
 <expression> ::= <orop>
 <orop> ::= <andop> ( '||' <andop> )*
