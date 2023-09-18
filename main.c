@@ -57,7 +57,8 @@ int main(int argc, char *argv[])
     printAst(ast);
     printf("\n\n");
 
-    if (analyze(ast))
+    struct SymbolTable *symbolTable;
+    if ((symbolTable = analyze(ast)) == NULL)
     {
         printf("Error in syntatic analysis\n");
         freeAst(ast);
@@ -65,12 +66,15 @@ int main(int argc, char *argv[])
         free(input);
         return -1;
     }
+    printf("Symbol Table:\n");
+    printSymbolTable(symbolTable);
     printf("\n\n");
 
     char *assemblyCode;
-    if ((assemblyCode = codeGeneration(ast)) == NULL)
+    if ((assemblyCode = codeGeneration(ast, symbolTable)) == NULL)
     {
         printf("Error in code generation\n");
+        freeSymbolTable(symbolTable);
         freeAst(ast);
         freeTokens(tokens);
         free(input);
@@ -96,6 +100,7 @@ int main(int argc, char *argv[])
     printf("Result: %d\n", result);
 
     free(assemblyCode);
+    freeSymbolTable(symbolTable);
     freeAst(ast);
     freeTokens(tokens);
     free(input);

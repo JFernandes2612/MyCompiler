@@ -194,6 +194,7 @@ struct StringKeyArbitraryValueMap *stringKeyArbitraryValueMapFactory()
     struct StringKeyArbitraryValueMap *ret = malloc(sizeof(struct StringKeyArbitraryValueMap));
     ret->entries = NULL;
     ret->number_of_entries = 0;
+    return ret;
 }
 
 void stringKeyArbitraryValueMapAddItem(struct StringKeyArbitraryValueMap *map, struct StringKeyArbitraryValueMapEntry *entry)

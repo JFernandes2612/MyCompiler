@@ -2,13 +2,16 @@
 #define ANALYZER_H
 
 #include "../Parser/ast.h"
+#include "symbolTable.h"
 
-int analyze(const struct Ast *ast);
+struct SymbolTable *analyze(const struct Ast *ast);
 
-int analyzerVisit(struct Node *node);
+int analyzerVisit(struct Node *node, struct SymbolTable *symbolTable);
 
-int analyzerVisitDown(struct Node *node);
+int analyzerVisitDown(struct Node *node, struct SymbolTable *symbolTable);
 
-int analyzerVisitFunction(struct Node *node);
+int analyzerDeclaration(struct Node *node, struct SymbolTable *symbolTable);
+
+int analyzerVisitFunction(struct Node *node, struct SymbolTable *symbolTable);
 
 #endif

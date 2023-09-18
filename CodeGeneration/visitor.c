@@ -14,7 +14,7 @@ char *codeGenerationLabel()
     return buff;
 }
 
-int codeGenerationVisitIntLiteral(struct Node *node, char *assemblyCode)
+int codeGenerationVisitIntLiteral(struct Node *node, char *assemblyCode, const struct SymbolTable *symbolTable)
 {
     char *int_value_in_string = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "value"));
     char *buff = malloc(BUFF_SIZE);
@@ -26,16 +26,23 @@ int codeGenerationVisitIntLiteral(struct Node *node, char *assemblyCode)
     return 0;
 }
 
-int codeGenerationVisitIdentifier(struct Node *node, char *assemblyCode)
+int codeGenerationVisitIdentifier(struct Node *node, char *assemblyCode, const struct SymbolTable *symbolTable)
 {
-    strcat(assemblyCode, "\tmov -8(%rbp), %eax\n");
+    char *variable_name = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "id"));
+    long variable_stack_offset = symbolTableGetVariableOffset(symbolTable, variable_name);
+    char *buff = malloc(BUFF_SIZE);
+    strcpy(buff, "");
+    sprintf(buff, "\tmov %ld(%%rbp), %%eax\n", variable_stack_offset);
+    strcat(assemblyCode, buff);
+    free(buff);
+    free(variable_name);
 
     return 0;
 }
 
-int codeGenerationVisitUnaryOp(struct Node *node, char *assemblyCode)
+int codeGenerationVisitUnaryOp(struct Node *node, char *assemblyCode, const struct SymbolTable *symbolTable)
 {
-    int error = codeGenerationVisit(node->children[0], assemblyCode);
+    int error = codeGenerationVisit(node->children[0], assemblyCode, symbolTable);
 
     char *op = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "op"));
 
@@ -55,7 +62,7 @@ int codeGenerationVisitUnaryOp(struct Node *node, char *assemblyCode)
     return error;
 }
 
-int codeGenerationVisitBinOp(struct Node *node, char *assemblyCode)
+int codeGenerationVisitBinOp(struct Node *node, char *assemblyCode, const struct SymbolTable *symbolTable)
 {
     char *op = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "op"));
     int error = 0;
@@ -68,7 +75,7 @@ int codeGenerationVisitBinOp(struct Node *node, char *assemblyCode)
         char *label1 = codeGenerationLabel();
         char *label2 = codeGenerationLabel();
 
-        error |= codeGenerationVisit(node->children[0], assemblyCode);
+        error |= codeGenerationVisit(node->children[0], assemblyCode, symbolTable);
 
         strcat(assemblyCode, "\tcmpl $0, %eax\n");
 
@@ -88,7 +95,7 @@ int codeGenerationVisitBinOp(struct Node *node, char *assemblyCode)
         sprintf(buff, "\tjmp %s\n%s:\n", label2, label1);
         strcat(assemblyCode, buff);
 
-        error |= codeGenerationVisit(node->children[1], assemblyCode);
+        error |= codeGenerationVisit(node->children[1], assemblyCode, symbolTable);
 
         strcpy(buff, "");
         sprintf(buff, "\tcmpl $0, %%eax\n\tmovl $0, %%eax\n\tsetne %%al\n%s:\n", label2);
@@ -99,10 +106,10 @@ int codeGenerationVisitBinOp(struct Node *node, char *assemblyCode)
     }
     else
     {
-        error |= codeGenerationVisit(node->children[0], assemblyCode);
+        error |= codeGenerationVisit(node->children[0], assemblyCode, symbolTable);
         strcat(assemblyCode, "\tpush %rax\n");
 
-        error |= codeGenerationVisit(node->children[1], assemblyCode);
+        error |= codeGenerationVisit(node->children[1], assemblyCode, symbolTable);
         strcat(assemblyCode, "\tpop %rcx\n");
 
         if (strcmp(op, "+") == 0)
@@ -152,10 +159,10 @@ int codeGenerationVisitBinOp(struct Node *node, char *assemblyCode)
     return error;
 }
 
-int codeGenerationVisitReturn(struct Node *node, char *assemblyCode)
+int codeGenerationVisitReturn(struct Node *node, char *assemblyCode, const struct SymbolTable *symbolTable)
 {
     // Visit child expression
-    int error = codeGenerationVisit(node->children[0], assemblyCode);
+    int error = codeGenerationVisit(node->children[0], assemblyCode, symbolTable);
 
     strcat(assemblyCode, "\tmov %rbp, %rsp\n");
     strcat(assemblyCode, "\tpop %rbp\n");
@@ -164,7 +171,7 @@ int codeGenerationVisitReturn(struct Node *node, char *assemblyCode)
     return error;
 }
 
-int codeGenerationVisitFunction(struct Node *node, char *assemblyCode)
+int codeGenerationVisitFunction(struct Node *node, char *assemblyCode, const struct SymbolTable *symbolTable)
 {
     char *func_name = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "funcName"));
     sprintf(assemblyCode, "%s%s:\n", assemblyCode, func_name);
@@ -174,94 +181,101 @@ int codeGenerationVisitFunction(struct Node *node, char *assemblyCode)
     strcat(assemblyCode, "\tmov %rsp, %rbp\n");
 
     // Visit Function Body
-    return codeGenerationVisit(node->children[0], assemblyCode);
+    return codeGenerationVisit(node->children[0], assemblyCode, symbolTable);
 }
 
-int codeGenerationVisitAttribution(struct Node *node, char *assemblyCode)
+int codeGenerationVisitAttribution(struct Node *node, char *assemblyCode, const struct SymbolTable *symbolTable)
 {
-    int error = codeGenerationVisit(node->children[0], assemblyCode);
+    int error = codeGenerationVisit(node->children[0], assemblyCode, symbolTable);
 
-    strcat(assemblyCode, "\tmov %eax, -8(%rbp)\n");
+    char *variable_name = arbitraryValueToString(stringKeyArbitraryValueMapGetItem(node->data, "id"));
+    long variable_stack_offset = symbolTableGetVariableOffset(symbolTable, variable_name);
+    char *buff = malloc(BUFF_SIZE);
+    strcpy(buff, "");
+    sprintf(buff, "\tmov %%eax, %ld(%%rbp)\n", variable_stack_offset);
+    strcat(assemblyCode, buff);
+    free(buff);
+    free(variable_name);
 
     return 0;
 }
 
-int codeGenerationVisitDeclaration(struct Node *node, char *assemblyCode)
+int codeGenerationVisitDeclaration(struct Node *node, char *assemblyCode, const struct SymbolTable *symbolTable)
 {
     if (node->number_of_children == 1)
     {
-        return codeGenerationVisitAttribution(node, assemblyCode);
+        return codeGenerationVisitAttribution(node, assemblyCode, symbolTable);
     }
 
     return 0;
 }
 
-int codeGenerationVisitProgram(struct Node *node, char *assemblyCode)
+int codeGenerationVisitProgram(struct Node *node, char *assemblyCode, const struct SymbolTable *symbolTable)
 {
     strcat(assemblyCode, "\t.globl main\n");
 
     // Visit Function
-    return codeGenerationVisit(node->children[0], assemblyCode);
+    return codeGenerationVisit(node->children[0], assemblyCode, symbolTable);
 }
 
-int codeGenerationVisitDown(struct Node *node, char *assemblyCode)
+int codeGenerationVisitDown(struct Node *node, char *assemblyCode, const struct SymbolTable *symbolTable)
 {
     int error = 0;
     if (node->number_of_children != 0)
     {
         for (long i = 0; i < node->number_of_children; i++)
         {
-            error |= codeGenerationVisit(node->children[i], assemblyCode);
+            error |= codeGenerationVisit(node->children[i], assemblyCode, symbolTable);
         }
     }
     return error;
 }
 
-int codeGenerationVisit(struct Node *node, char *assemblyCode)
+int codeGenerationVisit(struct Node *node, char *assemblyCode, const struct SymbolTable *symbolTable)
 {
     switch (node->nodeType)
     {
     case PROGRAM:
-        return codeGenerationVisitProgram(node, assemblyCode);
+        return codeGenerationVisitProgram(node, assemblyCode, symbolTable);
         break;
     case FUNCTION:
-        return codeGenerationVisitFunction(node, assemblyCode);
+        return codeGenerationVisitFunction(node, assemblyCode, symbolTable);
         break;
     case DECLARATION:
-        return codeGenerationVisitDeclaration(node, assemblyCode);
+        return codeGenerationVisitDeclaration(node, assemblyCode, symbolTable);
         break;
     case ATTRIBUTION:
-        return codeGenerationVisitAttribution(node, assemblyCode);
+        return codeGenerationVisitAttribution(node, assemblyCode, symbolTable);
         break;
     case RETURN:
-        return codeGenerationVisitReturn(node, assemblyCode);
+        return codeGenerationVisitReturn(node, assemblyCode, symbolTable);
         break;
     case INT_LITERAL:
-        return codeGenerationVisitIntLiteral(node, assemblyCode);
+        return codeGenerationVisitIntLiteral(node, assemblyCode, symbolTable);
         break;
     case UNARY_OP:
-        return codeGenerationVisitUnaryOp(node, assemblyCode);
+        return codeGenerationVisitUnaryOp(node, assemblyCode, symbolTable);
         break;
     case BIN_OP:
-        return codeGenerationVisitBinOp(node, assemblyCode);
+        return codeGenerationVisitBinOp(node, assemblyCode, symbolTable);
         break;
     case IDENTIFIER:
-        return codeGenerationVisitIdentifier(node, assemblyCode);
+        return codeGenerationVisitIdentifier(node, assemblyCode, symbolTable);
         break;
     default:
-        return codeGenerationVisitDown(node, assemblyCode);
+        return codeGenerationVisitDown(node, assemblyCode, symbolTable);
         break;
     }
 
     return 0;
 }
 
-char *codeGeneration(struct Ast *ast)
+char *codeGeneration(struct Ast *ast, const struct SymbolTable *symbolTable)
 {
     char *assemblyCode = malloc(BUFF_SIZE);
     strcpy(assemblyCode, "");
 
-    if (codeGenerationVisit(ast->program, assemblyCode))
+    if (codeGenerationVisit(ast->program, assemblyCode, symbolTable))
     {
         free(assemblyCode);
         return NULL;
